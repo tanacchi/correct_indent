@@ -21,7 +21,7 @@ int main(void){
     }
   }
 
-  printf("\n\n printf = [%s]\n\n", reader);
+  printf("\n\nprintf = [%s]\n\n", reader);
 
   flat_string(reader, scanner);
 
