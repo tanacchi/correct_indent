@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-#define MAX 2048
+#define MAX 4096
 
 void flat_string(char src[], char artifact[]);
 void replace_newline(char src[], char dist[]);
 void del_extra_space(char src[], char dist[]);
-int countHeadSpace(char* src);
-int countTaleSpace(char* src, int length);
+int count_head_space(char* src);
+int count_tale_space(char* src, int length);
 void split_string_space(char* src, char** dist);
 int find_next_space(char* src);
 
@@ -57,13 +57,13 @@ void replace_newline(char src[], char dist[]){
   dist[i+1] = '\0';
 }
 
-int countHeadSpace(char* src) {
+int count_head_space(char* src) {
   int count;
   for (count = 0; src[count] == ' '; count++);
   return count;
 }
 
-int countTaleSpace(char* src, int length){
+int count_tale_space(char* src, int length){
   int i, count;
   //  for (i = length - 1; src[i] == ' '; i--) count++;
   //  return count;
@@ -73,14 +73,14 @@ int countTaleSpace(char* src, int length){
 
 void del_extra_space(char src[], char dist[]){
   int i, j = 0;
-  const int head_space_count = countHeadSpace(src);
+  const int head_space_count = count_head_space(src);
   for (i = head_space_count; src[i] != '\0'; i++){
     if ((src[i] != ' ') || (src[i+1] != ' ')){ 
       dist[j] = src[i];
       j++;
     }
   }
-  const int tale_space_count = countTaleSpace(dist, j);
+  const int tale_space_count = count_tale_space(dist, j);
   dist[j - tale_space_count] = '\0';
 }
 
