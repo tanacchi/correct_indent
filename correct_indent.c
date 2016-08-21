@@ -9,6 +9,7 @@ int count_head_space(char* src);
 int count_tale_space(char* src, int length);
 void split_string_space(char* src, char** dist);
 int find_next_space(char* src);
+void set_nwl_spc(char* src[]);
 
 int main(int argc, char* argv[]){
 
@@ -45,6 +46,8 @@ int main(int argc, char* argv[]){
   for (i = 0; output[i] != NULL; i++)
     printf("%s\n", output[i]);
 
+  set_nwl_spc(output);
+  
   return 0;
  }
 
@@ -103,4 +106,33 @@ int find_next_space(char* src){
   for (count = 0; src[count] != ' '; count++)
     if (src[count] == '\0') return -1;
   return count;
+}
+
+void set_nwl_spc(char* src[]){
+  int i;
+  for (i = 0; src[i] != NULL; i++){
+    if (!(strcmp(src[i], "#include"))){
+      
+    }
+    else if (!(strcmp(src[i], "#define"))){
+      
+    }
+    else if (!(strcmp(src[i], "int"))){
+      if (!(strcmp(src[i+1], "i;"))){
+	
+      }
+      else{
+
+      }
+    }
+    else if (!(strcmp(src[i], "for"))){
+      
+    }
+    else if (!(strcmp(src[i], "printf"))){
+      
+    }
+    else if (!(strcmp(src[i], "return"))){
+      
+    }
+  }
 }
