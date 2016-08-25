@@ -1,15 +1,17 @@
 #include <stdio.h>
+#include <string.h>
 
-#define MAX 4096
+#define MAX 8000
 
 void flat_string(char src[], char artifact[]);
-void replace_newline(char src[], char dist[]);
-void del_extra_space(char src[], char dist[]);
+void replace_newline(char src[], char dest[]);
+void del_extra_space(char src[], char dest[]);
 int count_head_space(char* src);
 int count_tale_space(char* src, int length);
-void split_string_space(char* src, char** dist);
+void split_string_space(char* src, char** dest);
 int find_next_space(char* src);
 void set_nwl_spc(char* src[]);
+int return_at(char* src, char c);
 
 int main(int argc, char* argv[]){
 
@@ -20,7 +22,7 @@ int main(int argc, char* argv[]){
 
   char reader[MAX] = {0};
   char scanner[MAX] = {0};
-  char* output[MAX] = {0};
+  char* array[MAX] = {0};
 
   if((fp=fopen(argv[1], "r")) != NULL){
     for(i = 0; (input_buff = fgetc(fp)) != EOF; i++){
@@ -32,6 +34,7 @@ int main(int argc, char* argv[]){
   printf("\n\n[%s]\n\n", reader);
   
   //flat_string(reader, scanner);
+  
   replace_newline(reader, scanner);
 
   printf("\n\n[%s]\n\n", scanner);
@@ -40,24 +43,30 @@ int main(int argc, char* argv[]){
 
   printf("\n\n[%s]\n\n", reader);
 
-  split_string_space(reader, output);
+  split_string_space(reader, array);
 
 
-  for (i = 0; output[i] != NULL; i++)
-    printf("%s\n", output[i]);
-
-  set_nwl_spc(output);
+  /* for (i = 0; array[i] != '\0'; i++){ */
+  /*   printf("[ %s ]\n", array[i]); */
+  /* } */
+  /* putchar('\n'); */
   
+  /* for (i = 0; array[i] != '\0'; i++){ */
+  /*   printf("%d\n", strlen(array[i])); */
+  /* } */
+  
+  set_nwl_spc(array); 
+
   return 0;
  }
 
-void replace_newline(char src[], char dist[]){
+void replace_newline(char src[], char dest[]){
   int i;
   for (i = 0; i < 300/* src[i] != '\0'*/; i++){
-    if(src[i] == '\n') dist[i] = ' ';
-    else dist[i] = src[i];
+    if(src[i] == '\n') dest[i] = ' ';
+    else dest[i] = src[i];
   }
-  dist[i+1] = '\0';
+  dest[i+1] = '\0';
 }
 
 int count_head_space(char* src) {
@@ -74,31 +83,31 @@ int count_tale_space(char* src, int length){
   return length - 1 - i;
 }
 
-void del_extra_space(char src[], char dist[]){
+void del_extra_space(char src[], char dest[]){
   int i, j = 0;
   const int head_space_count = count_head_space(src);
   for (i = head_space_count; src[i] != '\0'; i++){
     if ((src[i] != ' ') || (src[i+1] != ' ')){ 
-      dist[j] = src[i];
+      dest[j] = src[i];
       j++;
     }
   }
-  const int tale_space_count = count_tale_space(dist, j);
-  dist[j - tale_space_count] = '\0';
+  const int tale_space_count = count_tale_space(dest, j);
+  dest[j - tale_space_count] = '\0';
 }
 
-void split_string_space(char* src, char** dist){
+void split_string_space(char* src, char** dest){
   int i;
   int offset = 0;
   int brank;
 
   for (i = 0; (brank = find_next_space(src + offset)) != -1; i++){
-    dist[i] = src + offset;
+    dest[i] = src + offset;
     offset += brank + 1;
-    dist[i][brank] = '\0';
+    dest[i][brank] = '\0';
   }
-  dist[i] = src + offset;
-  dist[i+1] = NULL;
+  dest[i] = src + offset;
+  dest[i+1] = NULL;
 }
 
 int find_next_space(char* src){
@@ -108,31 +117,54 @@ int find_next_space(char* src){
   return count;
 }
 
+
 void set_nwl_spc(char* src[]){
   int i;
+  int rag;
+  
   for (i = 0; src[i] != NULL; i++){
     if (!(strcmp(src[i], "#include"))){
-      
+      printf("%s %s\n", src[i], src[i+1]);
+      i++;
     }
     else if (!(strcmp(src[i], "#define"))){
-      
+      printf("%s %s %s\n", src[i], src[i+1], src[i+2]);
+      i += 2;
     }
     else if (!(strcmp(src[i], "int"))){
-      if (!(strcmp(src[i+1], "i;"))){
+      if (!(strcmp(src[i+1], "main(void)"))){
 	
       }
       else{
-
+	
       }
     }
     else if (!(strcmp(src[i], "for"))){
       
     }
     else if (!(strcmp(src[i], "printf"))){
-      
+     i += retun_at(src[i], ';');
     }
     else if (!(strcmp(src[i], "return"))){
-      
+      printf("%s %s", src[i], src[i+1]);
     }
+  }
+}
+
+int return_at(char* src, char c){
+  int length;
+  char* position;
+  while(1){
+    if ((position = strrchr(src, c)) == NULL)
+      continue;
+    
+    length = strlen(src);
+    
+    if (length == position - src + 1){
+      putchar('\n');
+      return length;
+    }
+    else
+      continue;
   }
 }
