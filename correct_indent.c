@@ -1,4 +1,4 @@
-#include <stdio.h>
+OB#include <stdio.h>
 #include <string.h>
 
 #define MAX 8000
@@ -142,29 +142,39 @@ void set_nwl_spc(char* src[]){
     else if (!(strcmp(src[i], "for"))){
       
     }
-    else if (!(strcmp(src[i], "printf"))){
-     i += retun_at(src[i], ';');
+    else if (!(strncmp(src[i], "printf", 6))){
+      while (!check_tale_char(src[i], ';')) {
+	printf("%s ", src[i]);
+	i++;
+      }
+      printf("%s\n", src[i]);
     }
     else if (!(strcmp(src[i], "return"))){
       printf("%s %s", src[i], src[i+1]);
+      i++;
     }
   }
 }
 
-int return_at(char* src, char c){
-  int length;
-  char* position;
-  while(1){
-    if ((position = strrchr(src, c)) == NULL)
-      continue;
-    
-    length = strlen(src);
-    
-    if (length == position - src + 1){
-      putchar('\n');
-      return length;
-    }
-    else
-      continue;
-  }
+int check_tale_char(char* src, char c){
+  if (get_tale_char(src) == c) return 1;
+  else return 0;
+}
+
+int get_string_length(char* src){
+  char* start_point = src;
+  while (*(src++) != '\0') ;
+  return src - start_point -1;
+}
+
+int get_string_length_vol2(char* src){
+  int i;
+  for (i = 0; src[i] != '\0'; i++) ;
+  return i;
+}
+
+char get_tale_char(char* src){
+  int length = get_string_length(src);
+  if (length == 0) return '\0';
+  return src[length - 1];
 }
