@@ -10,10 +10,12 @@ int count_head_space(char* src);
 int count_tale_space(char* src, int length);
 void split_string_space(char* src, char** dest);
 int find_next_space(char* src);
-void output(char* src[]);
 int check_tale_char(char* src, char c);
 char get_tale_char(char* src);
 void put_indent_level(int level);
+int find_char(char* src, char c);
+void output_vol1(char* src[]);
+void output_vol2(char* src[]);
 
 int main(int argc, char* argv[]){
 
@@ -21,11 +23,11 @@ int main(int argc, char* argv[]){
 
   int i;
   int input_buff;
-
+  
   char reader[MAX] = {0};
   char scanner[MAX] = {0};
   char* array[MAX] = {0};
-
+  
   if((fp=fopen(argv[1], "r")) != NULL){
     for(i = 0; (input_buff = fgetc(fp)) != EOF; i++){
       reader[i] = (char)input_buff;
@@ -55,14 +57,14 @@ int main(int argc, char* argv[]){
   }
   putchar('\n');
   
-  output(array); 
+  output_vol1(array); 
 
   return 0;
  }
 
 void replace_newline(char src[], char dest[]){
   int i;
-  for (i = 0; i < 300/* src[i] != '\0'*/; i++){
+  for (i = 0; src[i] != '\0'; i++){
     if(src[i] == '\n') dest[i] = ' ';
     else dest[i] = src[i];
   }
@@ -116,15 +118,15 @@ int find_next_space(char* src){
 }
 
 
-void output(char* src[]){
+void output_vol1(char* src[]){
   int i;
   int level = 0;
   
   for (i = 0; src[i] != NULL; i++){
     
-    if (!strcmp(src[i], "{")){
-	printf("%s\n", src[i]);
-	level++;
+    if (find_char(src[i], '{')){
+      printf("%s\n", src[i]);
+      level++;
     }
     else if (!strcmp(src[i], "}")){
       level--;
@@ -176,6 +178,17 @@ void output(char* src[]){
   }
 }
 
+void output_vol2(char* src[]){
+  
+  
+  
+  
+  
+  
+  
+  
+}
+
 int check_tale_char(char* src, char c){
   if (get_tale_char(src) == c) return 1;
   else return 0;
@@ -204,3 +217,4 @@ void put_indent_level(int level){
   for (i = 0; i < level; i++)
     printf("  ");
 }
+
