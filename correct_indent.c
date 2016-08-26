@@ -10,10 +10,10 @@ int count_head_space(char* src);
 int count_tale_space(char* src, int length);
 void split_string_space(char* src, char** dest);
 int find_next_space(char* src);
-void set_nwl_spc(char* src[]);
+void output(char* src[]);
 int check_tale_char(char* src, char c);
 char get_tale_char(char* src);
-void put_indent_level(int n);
+void put_indent_level(int level);
 
 int main(int argc, char* argv[]){
 
@@ -32,32 +32,30 @@ int main(int argc, char* argv[]){
     }
   }
 
-
   printf("\n\n[%s]\n\n", reader);
-  
-  //flat_string(reader, scanner);
   
   replace_newline(reader, scanner);
 
   printf("\n\n[%s]\n\n", scanner);
   
-  del_extra_space(scanner, reader); 
+  del_extra_space(scanner, reader);
 
   printf("\n\n[%s]\n\n", reader);
 
   split_string_space(reader, array);
 
 
-  /* for (i = 0; array[i] != '\0'; i++){ */
-  /*   printf("[ %s ]\n", array[i]); */
-  /* } */
-  /* putchar('\n'); */
+  for (i = 0; array[i] != '\0'; i++){
+    printf("%s\n", array[i]);
+  }
+  putchar('\n');
   
-  /* for (i = 0; array[i] != '\0'; i++){ */
-  /*   printf("%d\n", strlen(array[i])); */
-  /* } */
+  for (i = 0; array[i] != '\0'; i++){
+    printf("%d\n", strlen(array[i]));
+  }
+  putchar('\n');
   
-  set_nwl_spc(array); 
+  output(array); 
 
   return 0;
  }
@@ -79,8 +77,6 @@ int count_head_space(char* src) {
 
 int count_tale_space(char* src, int length){
   int i, count;
-  //  for (i = length - 1; src[i] == ' '; i--) count++;
-  //  return count;
   for (i = length -1; src[i] == ' '; i--);
   return length - 1 - i;
 }
@@ -120,23 +116,21 @@ int find_next_space(char* src){
 }
 
 
-void set_nwl_spc(char* src[]){
+void output(char* src[]){
   int i;
   int level = 0;
   
   for (i = 0; src[i] != NULL; i++){
     
-    if ((!strcmp(src[i], "{")) || (!strcmp(src[i], "}"))){
-      if (!strcmp(src[i], "{")){
+    if (!strcmp(src[i], "{")){
 	printf("%s\n", src[i]);
 	level++;
-      }
-      else if (!strcmp(src[i], "}")){
-	level--;
-	put_indent_level(level);
-	printf("%s\n", src[i]);
-      } 
     }
+    else if (!strcmp(src[i], "}")){
+      level--;
+      put_indent_level(level);
+      printf("%s\n", src[i]);
+    } 
     else{
       put_indent_level(level);
       if (!strcmp(src[i], "#include")){
