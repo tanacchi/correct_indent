@@ -1,4 +1,4 @@
-OB#include <stdio.h>
+#include <stdio.h>
 #include <string.h>
 
 #define MAX 8000
@@ -11,7 +11,9 @@ int count_tale_space(char* src, int length);
 void split_string_space(char* src, char** dest);
 int find_next_space(char* src);
 void set_nwl_spc(char* src[]);
-int return_at(char* src, char c);
+int check_tale_char(char* src, char c);
+char get_tale_char(char* src);
+void put_indent_level(int n);
 
 int main(int argc, char* argv[]){
 
@@ -120,38 +122,62 @@ int find_next_space(char* src){
 
 void set_nwl_spc(char* src[]){
   int i;
-  int rag;
+  int level = 0;
   
   for (i = 0; src[i] != NULL; i++){
-    if (!(strcmp(src[i], "#include"))){
-      printf("%s %s\n", src[i], src[i+1]);
-      i++;
-    }
-    else if (!(strcmp(src[i], "#define"))){
-      printf("%s %s %s\n", src[i], src[i+1], src[i+2]);
-      i += 2;
-    }
-    else if (!(strcmp(src[i], "int"))){
-      if (!(strcmp(src[i+1], "main(void)"))){
-	
+    
+    if ((!strcmp(src[i], "{")) || (!strcmp(src[i], "}"))){
+      if (!strcmp(src[i], "{")){
+	printf("%s\n", src[i]);
+	level++;
       }
-      else{
-	
-      }
+      else if (!strcmp(src[i], "}")){
+	level--;
+	put_indent_level(level);
+	printf("%s\n", src[i]);
+      } 
     }
-    else if (!(strcmp(src[i], "for"))){
-      
-    }
-    else if (!(strncmp(src[i], "printf", 6))){
-      while (!check_tale_char(src[i], ';')) {
-	printf("%s ", src[i]);
+    else{
+      put_indent_level(level);
+      if (!strcmp(src[i], "#include")){
+	printf("%s %s\n", src[i], src[i+1]);
 	i++;
       }
-      printf("%s\n", src[i]);
-    }
-    else if (!(strcmp(src[i], "return"))){
-      printf("%s %s", src[i], src[i+1]);
-      i++;
+      else if (!strcmp(src[i], "#define")){
+	printf("%s %s %s\n", src[i], src[i+1], src[i+2]);
+	i += 2;
+      }
+      else if (!strcmp(src[i], "int")){
+	if (!(strcmp(src[i+1], "main(void)"))){
+	  printf("%s %s", src[i], src[i+1]);
+	  i++;
+	}
+	else{
+	  while (!check_tale_char(src[i], ';')){
+	    printf("%s ", src[i]);
+	    i++;
+	  }
+	  printf("%s\n", src[i]);
+	}
+      }
+      else if (!strcmp(src[i], "for")){
+	while (!check_tale_char(src[i], ')')){
+	  printf("%s ", src[i]);
+	  i++;
+	}
+	printf("%s", src[i]);
+      }
+      else if (!strncmp(src[i], "printf", 6)){
+	while (!check_tale_char(src[i], ';')){
+	  printf("%s ", src[i]);
+	  i++;
+	}
+	printf("%s\n", src[i]);
+      }
+      else if (!strcmp(src[i], "return")){
+	printf("%s %s\n", src[i], src[i+1]);
+	i++;
+      }
     }
   }
 }
@@ -177,4 +203,10 @@ char get_tale_char(char* src){
   int length = get_string_length(src);
   if (length == 0) return '\0';
   return src[length - 1];
+}
+
+void put_indent_level(int level){
+  int i;
+  for (i = 0; i < level; i++)
+    printf("  ");
 }
