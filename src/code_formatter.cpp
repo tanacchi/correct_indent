@@ -18,6 +18,12 @@ const DelimiterInfo delimiters[] = {
     {']', "]", "]", taskNormal},
     {'\0', "", "", NULL}
 };
+const StatementInfo statements[] {
+    {"for", taskStateFor},
+    {"#include", taskStateInclude},
+    {"#define", taskStateDefine},
+    {"", taskNoState}
+};
 
 int main(int argc, char* argv[]) {
   std::string result;
@@ -37,7 +43,11 @@ void inputCode(std::string& result) {
 }
 
 void formatCode(std::string& code) {
-  
+  std::size_t workPoint = 0;
+  while (workPoint >= code.size()) {
+    int stateIndex = getStateIndex(code);
+    workPoint = statements[stateIndex].taskFunc(workPoint, code);
+  }
 }
 
 void indentCode(std::string& code) {
@@ -82,6 +92,10 @@ int findDelimiter(const char input) {
   return -1;
 }
 
+int getStateIndex(std::size_t workIndex, const std::string code) {
+
+}
+
 void addIndentRow(int indentDepth, std::size_t workPoint, std::string& code) {
   if (workPoint >= code.size()) return;
   bool endBrace = false;
@@ -121,4 +135,16 @@ void taskSpace(Section* section, std::string& result) {
     }
   else
     result += section->frontCode + ' ';
+}
+
+void taskStateFor(StatementInfo& statement, std::string& result) {
+
+}
+
+void taskStateInclude(StatementInfo& statement, std::string& result) {
+
+}
+
+void taskStateDefine(StatementInfo& statement, std::string& result) {
+
 }
