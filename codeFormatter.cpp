@@ -20,6 +20,7 @@ bool remake(Section* section, std::string& result);
 void taskNormal(Section* section, std::string& result);
 void taskSpace(Section* section, std::string& result);
 int findDelimiter(char input);
+void formatCode(std::string& code);
 void indentCode(std::string& code);
 void addIndentRow(int indentDepth, int workPoint, std::string& code);
 int getDiffIndent(const std::string& code, int start, int end);
@@ -41,14 +42,19 @@ const DelimiterInfo delimiters[] = {
 
 int main(int argc, char* argv[]) {
   std::string result;
+  inputCode(result);
+  formatCode(result);
+  indentCode(result);
+  std::cout << result;
+}
+
+void inputCode(std::string& result) {
   bool continueFlag = true;
 
   while (continueFlag) {
     Section* section = getInputOneSection();
     continueFlag = remake(section, result);
   }
-  indentCode(result);
-  std::cout << result;
 }
 
 Section* getInputOneSection() {
@@ -86,8 +92,9 @@ void taskNormal(Section* section,  std::string& result) {
   const DelimiterInfo* delimiter = &delimiters[delimiterIndex];
 
   if (!section->frontCode.empty())
-    result += section->frontCode;
-  result += !section->frontCode.empty() ? delimiter->normalFormat : delimiter->onlyDelimFormat;
+    result += section->frontCode + section->normalFormat;
+  else
+    result += delimiter->onlyDelimFormat;
 }
 
 void taskSpace(Section* section, std::string& result) {
@@ -107,6 +114,10 @@ int findDelimiter(char input) {
   while (delimiter_p->delimiter != '\0')
     if (input == (delimiter_p++)->delimiter) return delimiter_p - delimiters - 1;
   return -1;
+}
+
+void formatCode(std::string& code) {
+  
 }
 
 void indentCode(std::string& code) {
