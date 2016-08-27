@@ -1,7 +1,6 @@
 #include "code_formatter.hpp"
 
 #include <iostream>
-#include <string>
 #include <algorithm>
 #include <cstdio>
 
