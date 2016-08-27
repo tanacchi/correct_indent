@@ -1,7 +1,7 @@
-codeFormatter: build/codeFormatter.o
+code_formatter: build/code_formatter.o
 	-mkdir -p bin
-	g++ -Wall -o bin/codeFormatter build/codeFormatter.o
+	g++ -Wall -o bin/code_formatter build/code_formatter.o
 
-build/codeFormatter.o: src/codeFormatter.cpp
+build/code_formatter.o: src/code_formatter.cpp
 	-mkdir -p build
-	g++ -Wall -std=c++11 -Iinclude -o build/codeFormatter.o -c src/codeFormatter.cpp
+	g++ -Wall -std=c++11 -Iinclude -o build/code_formatter.o -c src/code_formatter.cpp
