@@ -294,7 +294,6 @@ void output_vol3(char** src){
       }
     }    
   }
-  
 }
 /*------  Compare the tale of the string and specified charactor  -----  */
 int check_tale_char(char* src, char c){
@@ -327,7 +326,7 @@ char get_tale_char(char* src){
 void put_indent_level(int level){
   int i;
   for (i = 0; i < level; i++)
-    printf("^^");
+    printf("  ");
 }
 
 int count_char(char* src[], int length, char c){
