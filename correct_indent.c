@@ -24,6 +24,7 @@ int check_paren_match(char c);
 
 void output_vol1(char* src[]);
 void output_vol2(char* src, int paren, int bracket);
+void output_vol3(char** src);
 
 int main(int argc, char* argv[]){
 
@@ -70,15 +71,17 @@ int main(int argc, char* argv[]){
 
   /* printf("front = [%d] right = [%d]", front, right); */
 
-  int paren_gap = 0, bracket_gap = 0;
-  for (i = 0; array[i] != NULL; i++){
+  /* int paren_gap = 0, bracket_gap = 0; */
+  /* for (i = 0; array[i] != NULL; i++){ */
+  /*   paren_gap = count_char(array, i, '(') - count_char(array, i, ')'); */
+  /*   bracket_gap = count_char(array, i, '{') - count_char(array, i, '}'); */
 
-    paren_gap = count_char(array, i, '(') - count_char(array, i, ')');
-    bracket_gap = count_char(array, i, '{') - count_char(array, i, '}');
+  /*   output_vol2(array[i], paren_gap, bracket_gap); */
+  /* } */
+  /* putchar('\n'); */
+  
+  output_vol3(array);
 
-    output_vol2(array[i], paren_gap, bracket_gap);
-    
-  }
   return 0;
  }
 
@@ -143,7 +146,7 @@ int find_next_space(char* src){
   return count;
 }
 
-/*----------------  Test function to out put (for "work.c") ------  */
+/*----------------  Function to out put ------  */
 void output_vol1(char* src[]){
   int i;
   int level = 0;
@@ -220,9 +223,8 @@ void output_vol1(char* src[]){
   }
 }
 
-/*-----------------  Another way to out put  -----------*/
 void output_vol2(char* src, int paren_gap, int bracket_gap){
-  
+  /* printf("[%d]", bracket_gap); */
   if (paren_gap){
     printf("%s ",src);
   }
@@ -234,12 +236,14 @@ void output_vol2(char* src, int paren_gap, int bracket_gap){
     }
     else if(check_tale_char(src, '}')){
       int i;
-      for (i = 0; i < bracket_gap - 1; i++) printf("  ");
+      /* for (i = 0; i < bracket_gap; i++) printf("  "); */
       printf("%s\n", src);
       for (i = 0; i < bracket_gap; i++) printf("  ");
     }
     else if (check_tale_char(src, ';')){
       printf("%s\n", src);
+      int i;
+      for (i = 0; i < bracket_gap; i++) printf("  ");
      }
     else{
       printf("%s ", src);
@@ -247,6 +251,51 @@ void output_vol2(char* src, int paren_gap, int bracket_gap){
   }
 }
 
+void output_vol3(char** src){
+  int i, j;
+  int paren_gap, bracket_gap;
+  
+  for (i = 0; src[i] != NULL; i++){
+    
+    paren_gap = count_char(src, i, '(') - count_char(src, i, ')');
+    bracket_gap = count_char(src, i, '{') - count_char(src, i, '}');
+    
+    if (paren_gap){
+      printf("%s ",src[i]);
+    }
+    else if (!strcmp(src[i], "#include")){
+      printf("%s %s\n", src[i], src[i+1]);
+      i++;
+    }
+    else if (!strcmp(src[i], "#define")){
+      printf("%s %s %s\n", src[i], src[i+1], src[i+2]);
+      i += 2;
+    }
+    else {
+      if (check_tale_char(src[i], '{')){
+	printf("%s\n", src[i]);
+	put_indent_level(bracket_gap);
+      }
+      else if(check_tale_char(src[i], '}')){
+	printf("%s\n", src[i]);
+	put_indent_level(bracket_gap);
+      }
+      else if (check_tale_char(src[i], ';')){
+	printf("%s\n", src[i]);
+	if (check_tale_char(src[i+1], '}')){
+	  put_indent_level(bracket_gap - 1);
+	}
+	else{
+	  put_indent_level(bracket_gap);
+	}
+      }
+      else{
+	printf("%s ", src[i]);
+      }
+    }    
+  }
+  
+}
 /*------  Compare the tale of the string and specified charactor  -----  */
 int check_tale_char(char* src, char c){
   if (get_tale_char(src) == c) return 1;
@@ -278,7 +327,7 @@ char get_tale_char(char* src){
 void put_indent_level(int level){
   int i;
   for (i = 0; i < level; i++)
-    printf("  ");
+    printf("^^");
 }
 
 int count_char(char* src[], int length, char c){
