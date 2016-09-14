@@ -147,17 +147,22 @@ void taskSpace(Section* section, std::string& result) {
 
 std::size_t taskStateFor(std::size_t workPoint, std::string& result) {
   
+
   return result.size();
 }
 
 std::size_t taskStateInclude(std::size_t workPoint, std::string& result) {
-
-  return result.size();
+  workPoint = result.find(' ', workPoint + 9); // by next word (length of "#include " is 9)
+  result[workPoint] = '\n';
+  return workPoint + 1;
 }
 
 std::size_t taskStateDefine(std::size_t workPoint, std::string& result) {
-
-  return result.size();
+  workPoint += 7; // go to next word (length of "#define" is 8)
+  for (int i = 0; i < 2; i++)
+    workPoint = result.find(' ', workPoint + 1); // go to after 2 words.
+  result[workPoint] = '\n';
+  return workPoint + 1;
 }
 
 std::size_t taskNoState(std::size_t workPoint, std::string& result) {
