@@ -47,6 +47,7 @@ void formatCode(std::string& code) {
   std::size_t workPoint = 0;
   while (workPoint < code.size()) {
     int stateIndex = getStateIndex(workPoint, code);
+if (stateIndex == 0) std::cout << "found for." << std::endl;
     workPoint = statements[stateIndex].taskFunc(workPoint, code);
   }
 }
@@ -98,7 +99,6 @@ int getStateIndex(std::size_t workIndex, const std::string code) {
 
   while (statement_p->taskFunc != NULL) {
     const std::string head_code = code.substr(workIndex, statement_p->statement.size());
-std::cout << workIndex << ":Cheak code: " << head_code << std::endl;
     if (head_code == (statement_p++)->statement) return statement_p - statements - 1;
   }
   return statement_p - statements - 1;
@@ -146,9 +146,12 @@ void taskSpace(Section* section, std::string& result) {
 }
 
 std::size_t taskStateFor(std::size_t workPoint, std::string& result) {
-  
+  for (int i = 0; i < 2; i++) {
+    workPoint = result.find('\n', workPoint + 1);
+    result[workPoint] = ' ';
+  }
 
-  return result.size();
+  return result.find(')', workPoint);
 }
 
 std::size_t taskStateInclude(std::size_t workPoint, std::string& result) {
