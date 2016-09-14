@@ -1,6 +1,39 @@
 #ifndef __CODE_FORMATTER_H_INCLUDE__
 #define __CODE_FORMATTER_H_INCLUDE__
 
-#include "code_parser.hpp"
+#include <string>
+
+struct Section {
+  int delimiterIndex;
+  std::string frontCode;
+};
+
+struct DelimiterInfo {
+  char delimiter;
+  std::string normalFormat;
+  std::string onlyDelimFormat;
+  void (*taskFunc)(Section*, std::string&);
+};
+
+struct StatementInfo {
+  std::string statement;
+  std::size_t (*taskFunc)(std::size_t, std::string&);
+};
+
+void inputCode(std::string& code);
+void formatCode(std::string& code);
+void indentCode(std::string& code);
+Section* getInputOneSection();
+bool remake(Section* section, std::string& result);
+int findDelimiter(const char input);
+int getStateIndex(std::size_t workPoint, const std::string code);
+void addIndentRow(int indentDepth, std::size_t workPoint, std::string& code);
+int getDiffIndent(const std::string& code, const std::size_t start, const std::size_t end);
+void taskNormal(Section* section, std::string& result);
+void taskSpace(Section* section, std::string& result);
+std::size_t taskStateFor(std::size_t workPoint, std::string& result);
+std::size_t taskStateInclude(std::size_t workPoint, std::string& result);
+std::size_t taskStateDefine(std::size_t workPoint, std::string& result);
+std::size_t taskNoState(std::size_t workPoint, std::string& result);
 
 #endif
