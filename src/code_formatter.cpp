@@ -98,7 +98,7 @@ int getStateIndex(std::size_t workIndex, const std::string code) {
 
   while (statement_p->taskFunc != NULL) {
     const std::string head_code = code.substr(workIndex, statement_p->statement.size());
-std::cout << "Cheak code: " << head_code << std::endl;
+std::cout << workIndex << ":Cheak code: " << head_code << std::endl;
     if (head_code == (statement_p++)->statement) return statement_p - statements - 1;
   }
   return statement_p - statements - 1;
@@ -166,6 +166,7 @@ std::size_t taskStateDefine(std::size_t workPoint, std::string& result) {
 }
 
 std::size_t taskNoState(std::size_t workPoint, std::string& result) {
-
-  return result.size();
+  std::size_t next_pos = result.find(' ', workPoint);
+  return (next_pos != std::string::npos ? next_pos + 1 : result.size());
 }
+
