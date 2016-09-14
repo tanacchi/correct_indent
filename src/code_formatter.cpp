@@ -22,7 +22,8 @@ const StatementInfo statements[] {
     {"for", taskStateFor},
     {"#include", taskStateInclude},
     {"#define", taskStateDefine},
-    {"", taskNoState}
+    {"", taskNoState},
+    {"", NULL}
 };
 
 int main(int argc, char* argv[]) {
@@ -44,7 +45,7 @@ void inputCode(std::string& result) {
 
 void formatCode(std::string& code) {
   std::size_t workPoint = 0;
-  while (workPoint >= code.size()) {
+  while (workPoint < code.size()) {
     int stateIndex = getStateIndex(workPoint, code);
     workPoint = statements[stateIndex].taskFunc(workPoint, code);
   }
@@ -93,8 +94,14 @@ int findDelimiter(const char input) {
 }
 
 int getStateIndex(std::size_t workIndex, const std::string code) {
+  const StatementInfo* statement_p = statements;
 
-  return 0;
+  while (statement_p->taskFunc != NULL) {
+    const std::string head_code = code.substr(workIndex, statement_p->statement.size());
+std::cout << "Cheak code: " << head_code << std::endl;
+    if (head_code == (statement_p++)->statement) return statement_p - statements - 1;
+  }
+  return statement_p - statements - 1;
 }
 
 void addIndentRow(int indentDepth, std::size_t workPoint, std::string& code) {
@@ -139,21 +146,21 @@ void taskSpace(Section* section, std::string& result) {
 }
 
 std::size_t taskStateFor(std::size_t workPoint, std::string& result) {
-
-  return 0;
+  
+  return result.size();
 }
 
 std::size_t taskStateInclude(std::size_t workPoint, std::string& result) {
 
-  return 0;
+  return result.size();
 }
 
 std::size_t taskStateDefine(std::size_t workPoint, std::string& result) {
 
-  return 0;
+  return result.size();
 }
 
 std::size_t taskNoState(std::size_t workPoint, std::string& result) {
 
-  return 0;
+  return result.size();
 }
