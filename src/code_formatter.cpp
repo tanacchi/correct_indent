@@ -45,8 +45,8 @@ void inputCode(std::string& result) {
 void formatCode(std::string& code) {
   std::size_t workPoint = 0;
   while (workPoint >= code.size()) {
-//    int stateIndex = getStateIndex(code);
-//    workPoint = statements[stateIndex].taskFunc(workPoint, code);
+    int stateIndex = getStateIndex(workPoint, code);
+    workPoint = statements[stateIndex].taskFunc(workPoint, code);
   }
 }
 
@@ -138,18 +138,22 @@ void taskSpace(Section* section, std::string& result) {
     result += section->frontCode + ' ';
 }
 
-void taskStateFor(StatementInfo& statement, std::string& result) {
+std::size_t taskStateFor(std::size_t workPoint, std::string& result) {
 
+  return 0;
 }
 
-void taskStateInclude(StatementInfo& statement, std::string& result) {
+std::size_t taskStateInclude(std::size_t workPoint, std::string& result) {
 
+  return 0;
 }
 
-void taskStateDefine(StatementInfo& statement, std::string& result) {
+std::size_t taskStateDefine(std::size_t workPoint, std::string& result) {
 
+  return 0;
 }
 
-void taskNoState(StatementInfo& statement, std::string& result) {
+std::size_t taskNoState(std::size_t workPoint, std::string& result) {
 
+  return 0;
 }

@@ -17,7 +17,7 @@ struct DelimiterInfo {
 
 struct StatementInfo {
   std::string statement;
-  void (*taskFunc)(StatementInfo&, std::string&);
+  std::size_t (*taskFunc)(std::size_t, std::string&);
 };
 
 void inputCode(std::string& code);
@@ -31,9 +31,9 @@ void addIndentRow(int indentDepth, std::size_t workPoint, std::string& code);
 int getDiffIndent(const std::string& code, const std::size_t start, const std::size_t end);
 void taskNormal(Section* section, std::string& result);
 void taskSpace(Section* section, std::string& result);
-void taskStateFor(StatementInfo& statement, std::string& result);
-void taskStateInclude(StatementInfo& statement, std::string& result);
-void taskStateDefine(StatementInfo& statement, std::string& result);
-void taskNoState(StatementInfo& statement, std::string& result);
+std::size_t taskStateFor(std::size_t workPoint, std::string& result);
+std::size_t taskStateInclude(std::size_t workPoint, std::string& result);
+std::size_t taskStateDefine(std::size_t workPoint, std::string& result);
+std::size_t taskNoState(std::size_t workPoint, std::string& result);
 
 #endif
