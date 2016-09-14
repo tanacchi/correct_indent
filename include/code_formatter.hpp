@@ -17,7 +17,7 @@ struct DelimiterInfo {
 
 struct StatementInfo {
   std::string statement;
-  void (*taskFunc)(StatementInfo*, std::string&);
+  void (*taskFunc)(StatementInfo&, std::string&);
 };
 
 void inputCode(std::string& code);
@@ -34,5 +34,6 @@ void taskSpace(Section* section, std::string& result);
 void taskStateFor(StatementInfo& statement, std::string& result);
 void taskStateInclude(StatementInfo& statement, std::string& result);
 void taskStateDefine(StatementInfo& statement, std::string& result);
+void taskNoState(StatementInfo& statement, std::string& result);
 
 #endif

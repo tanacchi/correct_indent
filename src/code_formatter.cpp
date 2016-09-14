@@ -45,8 +45,8 @@ void inputCode(std::string& result) {
 void formatCode(std::string& code) {
   std::size_t workPoint = 0;
   while (workPoint >= code.size()) {
-    int stateIndex = getStateIndex(code);
-    workPoint = statements[stateIndex].taskFunc(workPoint, code);
+//    int stateIndex = getStateIndex(code);
+//    workPoint = statements[stateIndex].taskFunc(workPoint, code);
   }
 }
 
@@ -94,6 +94,7 @@ int findDelimiter(const char input) {
 
 int getStateIndex(std::size_t workIndex, const std::string code) {
 
+  return 0;
 }
 
 void addIndentRow(int indentDepth, std::size_t workPoint, std::string& code) {
@@ -146,5 +147,9 @@ void taskStateInclude(StatementInfo& statement, std::string& result) {
 }
 
 void taskStateDefine(StatementInfo& statement, std::string& result) {
+
+}
+
+void taskNoState(StatementInfo& statement, std::string& result) {
 
 }
