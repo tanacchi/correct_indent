@@ -47,7 +47,6 @@ void formatCode(std::string& code) {
   std::size_t workPoint = 0;
   while (workPoint < code.size()) {
     int stateIndex = getStateIndex(workPoint, code);
-if (stateIndex == 0) std::cout << "found for." << std::endl;
     workPoint = statements[stateIndex].taskFunc(workPoint, code);
   }
 }
@@ -169,7 +168,7 @@ std::size_t taskStateDefine(std::size_t workPoint, std::string& result) {
 }
 
 std::size_t taskNoState(std::size_t workPoint, std::string& result) {
-  std::size_t next_pos = result.find(' ', workPoint);
+  std::size_t next_pos = result.find('\n', workPoint);
   return (next_pos != std::string::npos ? next_pos + 1 : result.size());
 }
 
