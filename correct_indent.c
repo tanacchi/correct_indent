@@ -3,31 +3,23 @@
 
 #define MAX 10000
 
-void flat_string(char src[], char artifact[]);
-void replace_newline(char src[], char dest[]);
-void replace_tab(char src[], char dest[]);
-void del_extra_space(char src[], char dest[]);
-int count_head_space(char* src);
-int count_tale_space(char* src, int length);
-void split_string_space(char* src, char** dest);
-int find_next_space(char* src);
-int check_tale_char(char* src, char c);
-char get_tale_char(char* src);
-void put_indent_level(int level);
-int find_char(char* src, char c);
-void print_till_check_char(char* src, char c, int i);
+void replace_newline(char*, char*);
+void replace_tab(char*, char*);
+void del_extra_space(char*, char*);
+int count_head_space(char*);
+int count_tale_space(char*, int);
+void split_string_space(char*, char**);
+int find_next_space(char*);
+int check_tale_char(char*, char);
+char get_tale_char(char*);
+void put_indent_level(int);
+int find_char(char*, char);
+int count_char(char**, int, char);
+void output_ver1(char**);
+void output_ver2(char*, int, int);
+void output_ver3(char**);
 
-int countparen_gap(char* type);
-
-int count_char(char* src[], int length, char c);
-
-int check_paren_match(char c);
-
-void output_vol1(char* src[]);
-void output_vol2(char* src, int paren, int bracket);
-void output_vol3(char** src);
-
-int main(int argc, char* argv[]){
+int main(int argc, char** argv){
 
   FILE *fp;
 
@@ -45,47 +37,24 @@ int main(int argc, char* argv[]){
       reader[i] = (char)input_buff;
     }
   }
-
-  /* printf("\n\n[%s]\n\n", reader); */
   
   replace_newline(reader, newline_none);
-
   replace_tab(newline_none, tab_none);
-  
-  /* printf("\n\n[%s]\n\n", scanner); */
-
   del_extra_space(tab_none, scanned);
-
-  /* printf("\n\n[%s]\n\n", reader); */
-
   split_string_space(scanned, array);
-
-
-  for (i = 0; array[i] != '\0'; i++){
-    printf("%s\n", array[i]);
-  }
-  putchar('\n');
-
   
-  /* for (i = 0; array[i] != '\0'; i++){ */
-  /*   printf("%d\n", strlen(array[i])); */
-  /* } */
-  /* putchar('\n'); */
-
-  /* output_vol1(array); */
-
-  /* printf("front = [%d] right = [%d]", front, right); */
+  /* output_ver1(array); */
 
   /* int paren_gap = 0, bracket_gap = 0; */
   /* for (i = 0; array[i] != NULL; i++){ */
   /*   paren_gap = count_char(array, i, '(') - count_char(array, i, ')'); */
   /*   bracket_gap = count_char(array, i, '{') - count_char(array, i, '}'); */
 
-  /*   output_vol2(array[i], paren_gap, bracket_gap); */
+  /*   output_ver2(array[i], paren_gap, bracket_gap); */
   /* } */
   /* putchar('\n'); */
   
-  output_vol3(array);
+  output_ver3(array);
 
   return 0;
  }
@@ -124,10 +93,6 @@ void del_extra_space(char src[], char dest[]){
   int i, j = 0;
   const int head_space_count = count_head_space(src);
   for (i = head_space_count; src[i] != '\0'; i++){
-    /* if ((src[i] != ' ') || (src[i+1] != ' ')){ */
-    /*   dest[j] = src[i]; */
-    /*   j++; */
-    /* } */
     if (src[i] != ' '){
       dest[j] = src[i];
       j++;
@@ -148,7 +113,7 @@ void split_string_space(char* src, char** dest){
   int i;
   int offset = 0;
   int brank;
-
+  
   for (i = 0; (brank = find_next_space(src + offset)) != -1; i++){
     dest[i] = src + offset;
     offset += brank + 1;
@@ -165,12 +130,11 @@ int find_next_space(char* src){
   return count;
 }
 
-void output_vol1(char* src[]){
+void output_ver1(char* src[]){
   int i;
   int level = 0;
   
   for (i = 0; src[i] != NULL; i++){
-
     
     if (!strcmp(src[i], "{")){
       printf("%s\n", src[i]);
@@ -241,7 +205,7 @@ void output_vol1(char* src[]){
   }
 }
 
-void output_vol2(char* src, int paren_gap, int bracket_gap){
+void output_ver2(char* src, int paren_gap, int bracket_gap){
   /* printf("[%d]", bracket_gap); */
   if (paren_gap){
     printf("%s ",src);
@@ -269,9 +233,9 @@ void output_vol2(char* src, int paren_gap, int bracket_gap){
   }
 }
 
-void output_vol3(char** src){
+void output_ver3(char** src){
   int i, j;
-  int paren_gap = 0, bracket_gap = 0;
+  int paren_gap, bracket_gap;
   
   for (i = 0; src[i] != NULL; i++){
     paren_gap = count_char(src, i, '(') - count_char(src, i, ')');
@@ -334,7 +298,7 @@ int get_string_length(char* src){
   return src - start_point -1;
 }
 
-int get_string_length_vol2(char* src){
+int get_string_length_ver2(char* src){
   int i;
   for (i = 0; src[i] != '\0'; i++) ;
   return i;
