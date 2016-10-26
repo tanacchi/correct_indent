@@ -59,7 +59,7 @@ int main(int argc, char** argv){
   return 0;
  }
 
-void replace_newline(char src[], char dest[]){
+void replace_newline(char* src, char* dest){
   int i;
   for (i = 0; src[i] != '\0'; i++){
     if (src[i] == '\n') dest[i] = ' ';
@@ -68,7 +68,7 @@ void replace_newline(char src[], char dest[]){
   dest[i+1] = '\0';
 }
 
-void replace_tab(char src[], char dest[]){
+void replace_tab(char* src, char* dest){
   int i;
   for (i = 0; src[i] != '\0'; i++){
     if (src[i] == '\t') dest[i] = ' ';
@@ -89,7 +89,7 @@ int count_tale_space(char* src, int length){
   return length - 1 - i;
 }
 
-void del_extra_space(char src[], char dest[]){
+void del_extra_space(char* src, char* dest){
   int i, j = 0;
   const int head_space_count = count_head_space(src);
   for (i = head_space_count; src[i] != '\0'; i++){
