@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_WIDTH 100000
+#define MAX_WIDTH 10000
 
 typedef struct code_status_t {
   int parenthesis_diff; 
@@ -22,9 +22,9 @@ typedef struct code_status_t {
 } CodeStatus;
 
 void read_souse_file(FILE* const, char*);
-void remove_newline(char*, char*);
-void remove_tab(char*, char*);
-void remove_extra_space(char*, char*);
+void remove_newline(const char*, char*);
+void remove_tab(const char*, char*);
+void remove_extra_space(const char*, char*);
 void set_status(const char*, CodeStatus*);
 void corrent_indent(const CodeStatus*, char*);
   
@@ -42,21 +42,21 @@ void read_souse_file(FILE* const fp, char* input_string) {
   input_string[i] = '\0';
 }
 
-void remove_newline(char* input_string, char* newline_none) {
+void remove_newline(const char* input_string, char* newline_none) {
   int i;
   for (i = 0; input_string[i] != '\0'; i++)
     if (input_string[i] == '\n') newline_none[i] = ' ';
     else newline_none[i] = input_string[i];
 }
 
-void remove_tab(char* newline_none, char* tab_none) {
+void remove_tab(const char* newline_none, char* tab_none) {
   int i;
   for (i = 0; newline_none[i] != '\0'; i++)
-    if (newline_none[i] == '\t') newline_none[i] = ' ';
+    if (newline_none[i] == '\t') tab_none[i] = ' ';
     else tab_none[i] = newline_none[i];
 }
 
-void remove_extra_space(char* tab_none, char* extra_space_none) {
+void remove_extra_space(const char* tab_none, char* extra_space_none) {
   int i, j = 0;
   static char copy_buff = '\0';
   for (i = count_head_space(tab_none); tab_none[i] != '\0'; i++) {
