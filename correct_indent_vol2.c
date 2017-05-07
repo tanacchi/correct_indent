@@ -5,6 +5,10 @@
 
 int count_head_space(const char*);
 int count_tale_space(const char*, const int);
+void read_souse_file(FILE* const fp, char* input_string);
+void remove_newline(char* input_string, char* newline_none);
+void remove_tab(char* newline_none, char* tab_none);
+void remove_extra_space(char* tab_none, char* space_less);
 
 void read_souse_file(FILE* const fp, char* input_string) {
   int input_buff;
@@ -40,7 +44,7 @@ void remove_extra_space(char* tab_none, char* space_less) {
   }
   space_less[j - count_tale_space(space_less, j)] = '\0';
 }
-
+ 
 int main(int argc, char** argv) {
   
   if (argc < 2) { puts("Please set a sourse file !"); return -1; }
@@ -59,11 +63,11 @@ int main(int argc, char** argv) {
 
   char space_less[MAX_WIDTH];
   remove_extra_space(tab_none, space_less);
+
   puts(space_less);
   
   return 0;
 }
-
 
 int count_head_space(const char* src) {
   int count = 0;
@@ -74,5 +78,5 @@ int count_head_space(const char* src) {
 int count_tale_space(const char* src, const int prev_tale) {
   int i = prev_tale;
   while (src[i] == ' ') i--;
-  return prev_tale - 1 - i;
+  return prev_tale - i + 1;
 }
