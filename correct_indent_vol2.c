@@ -30,7 +30,7 @@ void corrent_indent(const CodeStatus*, char*);
   
 int count_head_space(const char*);
 int count_tale_space(const char*, const int);
-int get_str_length(const char*);
+const int get_string_length(const char*);
 
 void read_souse_file(FILE* const fp, char* input_string) {
   int input_buff;
@@ -56,18 +56,18 @@ void remove_tab(char* newline_none, char* tab_none) {
     else tab_none[i] = newline_none[i];
 }
 
-void remove_extra_space(char* tab_none, char* space_less) {
+void remove_extra_space(char* tab_none, char* extra_space_none) {
   int i, j = 0;
   static char copy_buff = '\0';
   for (i = count_head_space(tab_none); tab_none[i] != '\0'; i++) {
     if (copy_buff == ' ' && tab_none[i] == ' ') ;
-    else space_less[j++] = tab_none[i];
+    else extra_space_none[j++] = tab_none[i];
     copy_buff = tab_none[i];
   }
-  space_less[j - count_tale_space(space_less, j)] = '\0';
+  extra_space_none[j - count_tale_space(extra_space_none, j)] = '\0';
 }
 
-void set_status(const char* space_less, CodeStatus* status) {
+void set_status(const char* extra_space_none, CodeStatus* status) {
 }
 
 void correct_indent(const CodeStatus* status, char* clean_code) {
@@ -93,12 +93,12 @@ int main(int argc, char** argv) {
   char tab_none[MAX_WIDTH];
   remove_tab(newline_none, tab_none);
 
-  char space_less[MAX_WIDTH];
-  remove_extra_space(tab_none, space_less);
+  char extra_space_none[MAX_WIDTH];
+  remove_extra_space(tab_none, extra_space_none);
 
-  const int length = get_str_length(space_less);
+  const int length = get_string_length(extra_space_none);
   CodeStatus status_array[length];  
-  set_status(space_less, status_array);
+  set_status(extra_space_none, status_array);
 
   char clean_code[MAX_WIDTH];
   correct_indent(status_array, clean_code);
@@ -120,7 +120,7 @@ int count_tale_space(const char* src, const int prev_tale) {
   return prev_tale - i + 1;
 }
 
-int get_str_length(const char* src) {
+const int get_string_length(const char* src) {
   int i;
   for (i = 0; src[i] != '\0'; i++) ;
   return i;
