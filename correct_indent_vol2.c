@@ -3,7 +3,7 @@
 
 #define MAX_WIDTH 100000
 
-typedef struct code_status_t{
+typedef struct code_status_t {
   int parenthesis_diff; 
   int bracket_diff;
   int curl_diff;
@@ -16,16 +16,10 @@ typedef struct code_status_t{
   
   int indent_depth;
   
-  char char_stock;
-  char prev_char;
+  char current_char;
+  char front_char;
 
 } CodeStatus;
-
-int count_head_space(const char*);
-int count_tale_space(const char*, const int);
-int get_str_length(const char*);
-int check_status_error(CodeStatus);
-void set_indent(int);
 
 void read_souse_file(FILE* const, char*);
 void remove_newline(char*, char*);
@@ -34,6 +28,10 @@ void remove_extra_space(char*, char*);
 void set_status(const char*, CodeStatus*);
 void corrent_indent(const CodeStatus*, char*);
   
+int count_head_space(const char*);
+int count_tale_space(const char*, const int);
+int get_str_length(const char*);
+
 void read_souse_file(FILE* const fp, char* input_string) {
   int input_buff;
   int i;
@@ -70,44 +68,12 @@ void remove_extra_space(char* tab_none, char* space_less) {
 }
 
 void set_status(const char* space_less, CodeStatus* status) {
-  int i;
-  for (i = 0; space_less[i] != '\0'; i++) {
-    const char current_char = space_less[i];
-    if (status[i].prev_char != '\\') {
-      switch (current_char) {
-      case '\'': status[i].single_quotation_diff = ++status[i].single_quotation_diff % 2; break;
-      case '\"': status[i].double_quotation_diff = ++status[i].double_quotation_diff % 2; break;      
-      case '/' :
-        if (status[i].prev_char == '*') status[i].encloce_comment_diff--; 
-        if (status[i].prev_char == '/') status[i].slash_comment_flag = 1;      
-        break;
-      case '*' :
-        if (status[i].prev_char == '/') status[i].encloce_comment_diff++;
-        break;
-      }
-    }
-    if (!status[i].slash_comment_flag && !status[i].encloce_comment_diff/* && !status[i].single_quotation_diff && !status[i].double_quotation_diff*/) {
-      switch (current_char) {
-      case '(' : status[i].parenthesis_diff++; break;
-      case ')' : status[i].parenthesis_diff--; break;
-      case '[' : status[i].bracket_diff++; break;
-      case ']' : status[i].bracket_diff--; break;
-      case '{' : status[i].curl_diff++; break;
-      case '}' : status[i].curl_diff--; break;
-      }      
-    }
-    status[i].indent_depth = status[i].bracket_diff;
-    if (check_status_error(status[i])) { puts("There are some synthax error!"); exit(-4); }
-    status[i].prev_char = current_char;
-    status[i+1] = status[i];
-  }
-  status[i].prev_char = '\0';
 }
 
 void correct_indent(const CodeStatus* status, char* clean_code) {
   int i;
-  for (i = 0; status[i].prev_char != '\0'; i++) {
-    clean_code[i] = status[i].prev_char;
+  for (i = 0; status[i].front_char != '\0'; i++) {
+    clean_code[i] = status[i].front_char;
   }
 }
 
@@ -139,19 +105,6 @@ int main(int argc, char** argv) {
   
   puts(clean_code);
 
-  printf("%d\n%d\n%d\n\n%d\n%d\n\n%d\n%d\n%c\n"
-
-         , status_array[length-1].parenthesis_diff
-         , status_array[length-1].bracket_diff
-         , status_array[length-1].curl_diff
-         
-         , status_array[length-1].single_quotation_diff
-         , status_array[length-1].double_quotation_diff
-
-         , status_array[length-1].slash_comment_flag
-         , status_array[length-1].encloce_comment_diff
-         , status_array[length-1].prev_char);
-
   return 0;
 }
 
@@ -171,13 +124,4 @@ int get_str_length(const char* src) {
   int i;
   for (i = 0; src[i] != '\0'; i++) ;
   return i;
-}
-
-int check_status_error(CodeStatus status) {
-  return (status.parenthesis_diff < 0) || (status.bracket_diff < 0) || (status.curl_diff < 0) ;
-}
-
-void set_indent(int depth) {
-  int i;
-  for (i = 0; i < depth*2; i++) putchar(' ');
 }
