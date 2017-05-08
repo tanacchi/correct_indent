@@ -17,7 +17,7 @@ typedef struct code_status_t {
   int indent_depth;
   
   char current_char;
-  char front_char;
+  char prev_char;
 
 } CodeStatus;
 
@@ -27,7 +27,7 @@ void replace_tab(const char*, char*);
 void remove_extra_space(const char*, char*);
 void set_status(const char*, CodeStatus*);
 void corrent_indent(const CodeStatus*, char*);
-  
+
 const int count_head_space(const char*);
 const int count_tale_space(const char*, const int);
 const int get_string_length(const char*);
@@ -72,8 +72,8 @@ void set_status(const char* extra_space_none, CodeStatus* status) {
 
 void correct_indent(const CodeStatus* status, char* clean_code) {
   int i;
-  for (i = 0; status[i].front_char != '\0'; i++) {
-    clean_code[i] = status[i].front_char;
+  for (i = 0; status[i].prev_char != '\0'; i++) {
+    clean_code[i] = status[i].prev_char;
   }
 }
 
