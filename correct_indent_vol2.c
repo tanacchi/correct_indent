@@ -58,7 +58,7 @@ void replace_tab(const char* newline_none, char* tab_none) {
 
 void remove_extra_space(const char* tab_none, char* extra_space_none) {
   int i, j = 0;
-  static char copy_buff = '\0';
+  char copy_buff = '\0';
   for (i = count_head_space(tab_none); tab_none[i] != '\0'; i++) {
     if (copy_buff == ' ' && tab_none[i] == ' ') ;
     else extra_space_none[j++] = tab_none[i];
@@ -120,7 +120,7 @@ const int count_tale_space(const char* src, const int prev_tale) {
 }
 
 const int get_string_length(const char* src) {
-  int i;
-  for (i = 0; src[i] != '\0'; i++) ;
-  return i;
+  int count = 0;
+  while (src[i] != '\0') count++;
+  return count;
 }
