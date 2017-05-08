@@ -4,21 +4,18 @@
 #define MAX_WIDTH 10000
 
 typedef struct code_status_t {
-  int parenthesis_diff; 
+  int parenthesis_diff;
   int bracket_diff;
   int curl_diff;
-  
+
   int single_quot_diff;
   int double_quot_diff; 
 
-  int encloce_comment_diff;
-  int slash_comment_flag;
-  
   int indent_depth;
-  
+
   char current_char;
   char prev_char;
-
+  
 } CodeStatus;
 
 void read_souse_file(FILE* const, char*);
@@ -68,6 +65,7 @@ void remove_extra_space(const char* tab_none, char* extra_space_none) {
 }
 
 void set_status(const char* extra_space_none, CodeStatus* status) {
+  
 }
 
 void correct_indent(const CodeStatus* status, char* clean_code) {
@@ -96,7 +94,7 @@ int main(int argc, char** argv) {
   char extra_space_none[MAX_WIDTH];
   remove_extra_space(tab_none, extra_space_none);
 
-  CodeStatus status_array[get_string_length(extra_space_none)];  
+  CodeStatus status_array[get_string_length(extra_space_none)];
   set_status(extra_space_none, status_array);
 
   char clean_code[MAX_WIDTH];
@@ -121,6 +119,6 @@ const int count_tale_space(const char* src, const int prev_tale) {
 
 const int get_string_length(const char* src) {
   int count = 0;
-  while (src[i] != '\0') count++;
+  while (src[count] != '\0') count++;
   return count;
 }
