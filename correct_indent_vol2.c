@@ -8,8 +8,8 @@ typedef struct code_status_t {
   int bracket_diff;
   int curl_diff;
   
-  int single_quotation_diff;
-  int double_quotation_diff; 
+  int single_quot_diff;
+  int double_quot_diff; 
 
   int encloce_comment_diff;
   int slash_comment_flag;
@@ -22,14 +22,14 @@ typedef struct code_status_t {
 } CodeStatus;
 
 void read_souse_file(FILE* const, char*);
-void remove_newline(const char*, char*);
-void remove_tab(const char*, char*);
+void replace_newline(const char*, char*);
+void replace_tab(const char*, char*);
 void remove_extra_space(const char*, char*);
 void set_status(const char*, CodeStatus*);
 void corrent_indent(const CodeStatus*, char*);
   
-int count_head_space(const char*);
-int count_tale_space(const char*, const int);
+const int count_head_space(const char*);
+const int count_tale_space(const char*, const int);
 const int get_string_length(const char*);
 
 void read_souse_file(FILE* const fp, char* input_string) {
@@ -42,14 +42,14 @@ void read_souse_file(FILE* const fp, char* input_string) {
   input_string[i] = '\0';
 }
 
-void remove_newline(const char* input_string, char* newline_none) {
+void replace_newline(const char* input_string, char* newline_none) {
   int i;
   for (i = 0; input_string[i] != '\0'; i++)
     if (input_string[i] == '\n') newline_none[i] = ' ';
     else newline_none[i] = input_string[i];
 }
 
-void remove_tab(const char* newline_none, char* tab_none) {
+void replace_tab(const char* newline_none, char* tab_none) {
   int i;
   for (i = 0; newline_none[i] != '\0'; i++)
     if (newline_none[i] == '\t') tab_none[i] = ' ';
@@ -88,16 +88,15 @@ int main(int argc, char** argv) {
   read_souse_file(fp, input_string);
 
   char newline_none[MAX_WIDTH];
-  remove_newline(input_string, newline_none);
+  replace_newline(input_string, newline_none);
 
   char tab_none[MAX_WIDTH];
-  remove_tab(newline_none, tab_none);
+  replace_tab(newline_none, tab_none);
 
   char extra_space_none[MAX_WIDTH];
   remove_extra_space(tab_none, extra_space_none);
 
-  const int length = get_string_length(extra_space_none);
-  CodeStatus status_array[length];  
+  CodeStatus status_array[get_string_length(extra_space_none)];  
   set_status(extra_space_none, status_array);
 
   char clean_code[MAX_WIDTH];
@@ -108,13 +107,13 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-int count_head_space(const char* src) {
+const int count_head_space(const char* src) {
   int count = 0;
   while (src[count] == ' ') count++;
   return count;
 }
 
-int count_tale_space(const char* src, const int prev_tale) {
+const int count_tale_space(const char* src, const int prev_tale) {
   int i = prev_tale;
   while (src[i] == ' ') i--;
   return prev_tale - i + 1;
