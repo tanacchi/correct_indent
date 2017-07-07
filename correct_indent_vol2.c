@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_WIDTH 10000
+#define MAX_WIDTH    10000
+#define INDENT_WIDTH 2
 
 typedef struct code_status_t {
-  int parenthesis_diff;
-  int bracket_diff;
-  int curl_diff;
-
-  int single_quot_diff;
-  int double_quot_diff; 
-
-  int indent_depth;
+  int parenthesis_diff; // ()
+  int bracket_diff;     // []
+  int curly_diff;       // {}
+  int angle_diff;       // <>
+  
+  int single_quot_num;
+  int double_quot_num; 
 
   char current_char;
   char prev_char;
@@ -65,14 +65,48 @@ void remove_extra_space(const char* tab_none, char* extra_space_none) {
 }
 
 void set_status(const char* extra_space_none, CodeStatus* status) {
-  
+  const CodeStatus initializer = {0, 0, 0, 0, 0, 0, '\0', '\0'};
+  status[0] = initializer;
+  int i;
+  char target_c;
+  for (i = 0; i < MAX_WIDTH-2 && (target_c = extra_space_none[i]) != '\0'; i++) {
+    if (i > 0) {
+      status[i] = status[i-1]; status[i];
+      status[i].prev_char = status[i-1].current_char;
+    }
+    status[i].current_char = target_c;
+    switch (target_c) {
+    case '(':  status[i].parenthesis_diff++; break;
+    case ')':  status[i].parenthesis_diff--; break;
+    case '[':  status[i].bracket_diff++;     break;
+    case ']':  status[i].bracket_diff--;     break;
+    case '{':  status[i].curly_diff++;       break;
+    case '}':  status[i].curly_diff--;       break;
+    case '<':  status[i].angle_diff++;       break;
+    case '>':  status[i].angle_diff--;       break;
+    case '\'': status[i].single_quot_num++; break;
+    case '"':  status[i].double_quot_num++; break;
+    }
+  }
 }
 
 void correct_indent(const CodeStatus* status, char* clean_code) {
-  int i;
-  for (i = 0; status[i].prev_char != '\0'; i++) {
-    clean_code[i] = status[i].prev_char;
+  int i, j;
+  for (i = 0; status[i].current_char != '\0'; i++) {
+    switch (status[i].prev_char) {
+    case '{':
+    case '}':
+    case ';':
+      if (status[i].parenthesis_diff || status[i].bracket_diff) break;
+      clean_code[i++] = '\n';
+      for (j = 0; j < status[i].curly_diff*INDENT_WIDTH; j++)
+        clean_code[i++] = ' ';
+      clean_code[i] = status[i].current_char;
+      break;
+    }
   }
+  clean_code[i] = '\n';
+  clean_code[i+1] = '\0';
 }
 
 int main(int argc, char** argv) {
