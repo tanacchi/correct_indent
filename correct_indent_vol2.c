@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_WIDTH    10000
 #define INDENT_WIDTH 2
@@ -25,11 +26,13 @@ void remove_extra_space(const char*, char*);
 void set_status(const char*, CodeStatus*);
 void corrent_indent(const CodeStatus*, char*);
 
-const int count_head_space(const char*);
-const int count_tale_space(const char*, const int);
-const int get_string_length(const char*);
+int count_head_space(const char*);
+int count_tale_space(const char*, const int);
+int get_length(const char*);
+const char* pickout_phrase(const CodeStatus* src, int start_point); 
 
-void read_souse_file(FILE* const fp, char* input_string) {
+void read_souse_file(FILE* const fp, char* input_string)
+{
   int input_buff;
   int i;
   for (i = 0; (input_buff = fgetc(fp)) != EOF; i++) {
@@ -39,21 +42,24 @@ void read_souse_file(FILE* const fp, char* input_string) {
   input_string[i] = '\0';
 }
 
-void replace_newline(const char* input_string, char* newline_none) {
+void replace_newline(const char* input_string, char* newline_none)
+{
   int i;
   for (i = 0; input_string[i] != '\0'; i++)
     if (input_string[i] == '\n') newline_none[i] = ' ';
     else newline_none[i] = input_string[i];
 }
 
-void replace_tab(const char* newline_none, char* tab_none) {
+void replace_tab(const char* newline_none, char* tab_none)
+{
   int i;
   for (i = 0; newline_none[i] != '\0'; i++)
     if (newline_none[i] == '\t') tab_none[i] = ' ';
     else tab_none[i] = newline_none[i];
 }
 
-void remove_extra_space(const char* tab_none, char* extra_space_none) {
+void remove_extra_space(const char* tab_none, char* extra_space_none)
+{
   int i, j = 0;
   char copy_buff = '\0';
   for (i = count_head_space(tab_none); tab_none[i] != '\0'; i++) {
@@ -64,7 +70,29 @@ void remove_extra_space(const char* tab_none, char* extra_space_none) {
   extra_space_none[j - count_tale_space(extra_space_none, j)] = '\0';
 }
 
-void set_status(const char* extra_space_none, CodeStatus* status) {
+int count_head_space(const char* src)
+{
+  int count = 0;
+  while (src[count] == ' ') count++;
+  return count;
+}
+
+int count_tale_space(const char* src, const int prev_tale)
+{
+  int i = prev_tale;
+  while (src[i] == ' ') i--;
+  return prev_tale - i + 1;
+}
+
+int get_length(const char* src)
+{
+  int count = 0;
+  while (src[count] != '\0') count++;
+  return count;
+}
+
+void set_status(const char* extra_space_none, CodeStatus* status)
+{
   const CodeStatus initializer = {0, 0, 0, 0, 0, 0, '\0', '\0'};
   status[0] = initializer;
   int i;
@@ -92,16 +120,58 @@ void set_status(const char* extra_space_none, CodeStatus* status) {
   status[i].current_char = '\0';
 }
 
-void correct_indent(const CodeStatus* status, char* clean_code) {
-  int i, j, k;
-  while () {
-
+void correct_indent(const CodeStatus* status, char* clean_code)
+{
+  int i = 0, j = 0;
+  int phrase_num;
+  char* phrase;
+  while (status[i].current_char != '\0') {
+    switch (status[i].prev_char) {
+    case '{':
+    case '}':
+    case ';':
+      clean_code[j++] = '\n';
+      int k;
+      for (k = 0; k < status[i].curly_diff*2; k++) clean_code[j++] = ' ';
+      break;
+    }
+    switch (status[i].current_char) {
+    case '#':
+      phrase_num = 0;
+      phrase = pickout_phrase(status, i);
+      if (!strcmp(phrase, "#include")) phrase_num = 2;
+      else if (!strcmp(phrase, "#define")) phrase_num = 3;
+      int k;
+      for (k = 0; k < phrase_num; phrase = pickout_phrase(status, i), k++) {
+        int length = get_length(phrase);
+        int l;
+        while (l < length) clean_code[j++] = phrase[l++];
+        clean_code[j++] = ' ';
+        i += length + 1;
+      }
+      clean_code[j++] = '\n';
+      break;
+    case '}':
+      j -= 2;
+      break;
+    }
+    clean_code[j++] = status[i++].current_char;
   }
   clean_code[j] = '\n';
   clean_code[j+1] = '\0';
 }
 
-int main(int argc, char** argv) {
+const char* pickout_phrase(const CodeStatus* src, int start_point)
+{
+  int i, j = 0;
+  static char dest[MAX_WIDTH] = {0};
+  for (i = start_point; src[i].current_char != ' ' && src[i].current_char != '\0'; i++) dest[j++] = src[i].current_char;
+  dest[j] = '\0';
+  return dest;
+}
+
+int main(int argc, char** argv)
+{
   
   if (argc < 2) { puts("Please set a sourse file !"); return -1; }
 
@@ -120,7 +190,7 @@ int main(int argc, char** argv) {
   char extra_space_none[MAX_WIDTH];
   remove_extra_space(tab_none, extra_space_none);
 
-  CodeStatus status_array[get_string_length(extra_space_none)];
+  CodeStatus status_array[MAX_WIDTH];
   set_status(extra_space_none, status_array);
 
   /* int i; */
@@ -150,22 +220,4 @@ int main(int argc, char** argv) {
   puts(clean_code);
 
   return 0;
-}
-
-const int count_head_space(const char* src) {
-  int count = 0;
-  while (src[count] == ' ') count++;
-  return count;
-}
-
-const int count_tale_space(const char* src, const int prev_tale) {
-  int i = prev_tale;
-  while (src[i] == ' ') i--;
-  return prev_tale - i + 1;
-}
-
-const int get_string_length(const char* src) {
-  int count = 0;
-  while (src[count] != '\0') count++;
-  return count;
 }
