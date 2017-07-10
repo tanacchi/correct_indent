@@ -84,8 +84,8 @@ void set_status(const char* extra_space_none, CodeStatus* status) {
     case '}':  status[i].curly_diff--;       break;
     case '<':  status[i].angle_diff++;       break;
     case '>':  status[i].angle_diff--;       break;
-    case '\'': status[i].single_quot_num++; break;
-    case '"':  status[i].double_quot_num++; break;
+    case '\'': status[i].single_quot_num++;  break;
+    case '"':  status[i].double_quot_num++;  break;
     }
   }
   status[i] = initializer;
@@ -93,18 +93,9 @@ void set_status(const char* extra_space_none, CodeStatus* status) {
 }
 
 void correct_indent(const CodeStatus* status, char* clean_code) {
-  int i, j = 0, k;
-  for (i = 0; status[i].current_char != '\0'; i++) {
-    switch (status[i].prev_char) {
-    case '{':
-    case '}':
-    case ';':
-      if (status[i].parenthesis_diff || status[i].bracket_diff) break;
-      clean_code[j++] = '\n';
-      for (k = 0; k < status[i].curly_diff*INDENT_WIDTH; k++)
-        clean_code[j++] = ' ';
-    default: clean_code[j++] = status[i].current_char;
-    }
+  int i, j, k;
+  while () {
+
   }
   clean_code[j] = '\n';
   clean_code[j+1] = '\0';
@@ -132,26 +123,26 @@ int main(int argc, char** argv) {
   CodeStatus status_array[get_string_length(extra_space_none)];
   set_status(extra_space_none, status_array);
 
-  int i;
-  for (i = 0; status_array[i].current_char != '\0'; i++) {
-    puts("------------------------------------");
-    printf("parenthesis_diff = %d\n"
-           "bracket_diff = %d\n"
-           "curly_diff = %d\n"
-           "angle_diff = %d\n"
-           "single_quot_num = %d\n"
-           "double_quot_num = %d\n"
-           "current_char = %c\n"
-           "prev_char = %c\n",
-           status_array[i].parenthesis_diff,
-           status_array[i].bracket_diff,
-           status_array[i].curly_diff,
-           status_array[i].angle_diff,
-           status_array[i].single_quot_num,
-           status_array[i].double_quot_num,
-           status_array[i].current_char,
-           status_array[i].prev_char);
-  }
+  /* int i; */
+  /* for (i = 0; status_array[i].current_char != '\0'; i++) { */
+  /*   puts("------------------------------------"); */
+  /*   printf("parenthesis_diff = %d\n" */
+  /*          "bracket_diff = %d\n" */
+  /*          "curly_diff = %d\n" */
+  /*          "angle_diff = %d\n" */
+  /*          "single_quot_num = %d\n" */
+  /*          "double_quot_num = %d\n" */
+  /*          "current_char = %c\n" */
+  /*          "prev_char = %c\n", */
+  /*          status_array[i].parenthesis_diff, */
+  /*          status_array[i].bracket_diff, */
+  /*          status_array[i].curly_diff, */
+  /*          status_array[i].angle_diff, */
+  /*          status_array[i].single_quot_num, */
+  /*          status_array[i].double_quot_num, */
+  /*          status_array[i].current_char, */
+  /*          status_array[i].prev_char); */
+  /* } */
   
   char clean_code[MAX_WIDTH];
   correct_indent(status_array, clean_code);
