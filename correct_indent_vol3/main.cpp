@@ -60,27 +60,40 @@ int main(int argc, char** argv)
   {
     std::string::size_type length{str.find_last_not_of(" ") - str.find_first_not_of(" ") + 1};
     str = str.substr(str.find_first_not_of(" "), length);
-    std::cout << str << "\n";
   }
-  std::cout << "=======================================" << std::endl;
   
+  std::vector<std::vector<std::string>> tokens{};
   for (auto& str : string_rows)
   {
+    std::vector<std::string> sub_tokens{};
     for (std::string target{str}; !target.empty();)
     {
       std::smatch result{};
-      if (std::regex_search(target, result, std::regex("\\s")))
+      if (std::regex_search(target, result, 
+                            std::regex("[\\s|\\(|\\)|\\{|\\}|\\[|\\]]")))
       {
-        std::cout << "$ " << result.prefix() << " $";
-        target = result.suffix();
+        sub_tokens.emplace_back(result.prefix());
+
+        std::string matched_string{result.str()};
+        if (matched_string != " ")
+          sub_tokens.emplace_back(matched_string);
       }
       else
       {
-        std::cout << "$ " << target << " $";
-        break;
+        sub_tokens.emplace_back(target);
       }
+      target = result.suffix();
     }
-    std::cout << std::endl;
+    tokens.emplace_back(sub_tokens);
+  }
+
+  for (const auto row : tokens)
+  {
+    for (const auto str : row)
+    {
+      std::cout << str << std::endl;
+    }
+    std::cout << "----" << std::endl;
   }
 
   return 0;
