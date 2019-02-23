@@ -55,10 +55,12 @@ int main(int argc, char** argv)
       string_rows.emplace_back(row_buff);
   }
 
-  for (auto str : string_rows)
+  for (auto& str : string_rows)
   {
-    std::cout << str << std::endl;
+    std::string::size_type length{str.find_last_not_of(" ") - str.find_first_not_of(" ") + 1};
+    str = str.substr(str.find_first_not_of(" "), length);
+    std::cout << str << '~' << std::endl;
   }
-
+  
   return 0;
 }
