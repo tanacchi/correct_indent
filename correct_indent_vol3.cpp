@@ -4,9 +4,30 @@
  *
  */
 
+#include <algorithm>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <vector>
 #include <fstream>
+
+template<typename charT = char>
+decltype(auto) remove_consecutive_chars(
+    typename std::basic_string<charT>::iterator first,
+    typename std::basic_string<charT>::iterator last,
+    const charT target)
+{
+  charT prev_char{'\0'};
+  auto result{first};
+  for (; first != last; ++first)
+  {
+    if (!(*first == prev_char && *first == target))
+    {
+      *result++ = prev_char = *first;
+    }
+  }
+  return result;
+}
 
 int main(int argc, char** argv)
 {
@@ -16,13 +37,28 @@ int main(int argc, char** argv)
   std::string input_string_raw{};
   for (std::string input_buff{}; std::getline(source_file_stream, input_buff);)
   {
-    std::cout << input_buff << std::endl;
-    input_string_raw += input_buff + ' ';
+    input_string_raw += input_buff + '\n';
   }
 
-  std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-  std::cout << input_string_raw << std::endl;
-  std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+  auto result1{remove_consecutive_chars(input_string_raw.begin(), 
+                                        input_string_raw.end(), 
+                                        ' ')};
+  auto result2{remove_consecutive_chars(input_string_raw.begin(), 
+                                        result1,
+                                        '\n')};
+
+  std::stringstream ss{input_string_raw.assign(input_string_raw.begin(), result2)};
+  std::vector<std::string> string_rows{};
+  for (std::string row_buff{}; std::getline(ss, row_buff);)
+  {
+    if (row_buff != " ")
+      string_rows.emplace_back(row_buff);
+  }
+
+  for (auto str : string_rows)
+  {
+    std::cout << str << std::endl;
+  }
 
   return 0;
 }
