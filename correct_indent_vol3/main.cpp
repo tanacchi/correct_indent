@@ -10,6 +10,7 @@
 #include <sstream>
 #include <vector>
 #include <fstream>
+#include <regex>
 
 template<typename charT = char>
 decltype(auto) remove_consecutive_chars(
@@ -59,8 +60,28 @@ int main(int argc, char** argv)
   {
     std::string::size_type length{str.find_last_not_of(" ") - str.find_first_not_of(" ") + 1};
     str = str.substr(str.find_first_not_of(" "), length);
-    std::cout << str << '~' << std::endl;
+    std::cout << str << "\n";
   }
+  std::cout << "=======================================" << std::endl;
   
+  for (auto& str : string_rows)
+  {
+    for (std::string target{str}; !target.empty();)
+    {
+      std::smatch result{};
+      if (std::regex_search(target, result, std::regex("\\s")))
+      {
+        std::cout << "$ " << result.prefix() << " $";
+        target = result.suffix();
+      }
+      else
+      {
+        std::cout << "$ " << target << " $";
+        break;
+      }
+    }
+    std::cout << std::endl;
+  }
+
   return 0;
 }
