@@ -12,6 +12,8 @@
 #include <fstream>
 #include <regex>
 
+#include "token.hpp"
+
 template<typename charT = char>
 decltype(auto) remove_consecutive_chars(
     typename std::basic_string<charT>::iterator first,

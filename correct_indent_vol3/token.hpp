@@ -34,7 +34,7 @@ struct Token
       Unknown
     };
    Token(Attribute attribute = Attribute::Unknown, std::string string = {})
-     : attribute{attribute}, string{string}
+     : attribute{attribute}, content{string}
    {
    }
 
