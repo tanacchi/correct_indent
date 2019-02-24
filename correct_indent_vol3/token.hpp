@@ -9,6 +9,8 @@
  */
 
 #include <string>
+#include <vector>
+#include <regex>
 
 struct Token
 {
@@ -21,13 +23,14 @@ struct Token
       Comma,
       SemiColon,
       LParen,   RParen,
+      LBrace,   RBrace,
       LBracket, RBracket,
       IfKeyword,
       ElseKeyWord,
       WhileKeyword,
       ReturnKeyword,
       TypeKeyword,
-      Itentify,
+      Identify,
       Number,
       CharAlphabet,
       CharNumber,
@@ -41,5 +44,55 @@ struct Token
    Attribute attribute;
    std::string content;
 };
+
+std::vector<Token> parse_level_1(std::vector<std::vector<std::string>> tokens)
+{
+  std::vector<Token> result;
+  for (const auto& row : tokens)
+  {
+    for (const auto& str : row)
+    {
+      Token token{};
+      std::cout << str << "\t";
+      if (std::regex_match(str, std::regex("[a-zA-Z_].*")))
+      {
+        std::cout << "<- Identify" << std::endl;
+        token.attribute = Token::Attribute::Identify;
+      }
+      else if (std::regex_match(str, std::regex("\\d.*")))
+      {
+        std::cout << "<- Number" << std::endl;
+        token.attribute = Token::Attribute::Number;
+      }
+      else if (str == "(")
+      {
+        std::cout << "<- LParen" << std::endl;
+        token.attribute = Token::Attribute::LParen;
+      }
+      else if (str == ")")
+      {
+        std::cout << "<- RParen" << std::endl;
+        token.attribute = Token::Attribute::RParen;
+      }
+      else if (str == "{")
+      {
+        std::cout << "<- LBrace" << std::endl;
+        token.attribute = Token::Attribute::LBrace;
+      }
+      else if (str == "}")
+      {
+        std::cout << "<- RBrace" << std::endl;
+        token.attribute = Token::Attribute::RBrace;
+      }
+      else
+      {
+        std::cout << "<- Other" << std::endl;
+      }
+      token.content = str;
+      result.emplace_back(token);
+    }
+  }
+  return result;
+}
 
 #endif  // INCLUDED_TOKEN_HPP

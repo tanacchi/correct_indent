@@ -87,14 +87,7 @@ int main(int argc, char** argv)
     tokens.emplace_back(sub_tokens);
   }
 
-  for (const auto row : tokens)
-  {
-    for (const auto str : row)
-    {
-      std::cout << str << std::endl;
-    }
-    std::cout << "----" << std::endl;
-  }
+  parse_level_1(tokens);
 
   return 0;
 }
