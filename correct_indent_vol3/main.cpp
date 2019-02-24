@@ -69,11 +69,9 @@ int main(int argc, char** argv)
     for (std::string target{str}; !target.empty();)
     {
       std::smatch result{};
-      if (std::regex_search(target, result, 
-                            std::regex("[\\s|\\(|\\)|\\{|\\}|\\[|\\]]")))
+      if (std::regex_search(target, result, std::regex("\\W")))
       {
         sub_tokens.emplace_back(result.prefix());
-
         std::string matched_string{result.str()};
         if (matched_string != " ")
           sub_tokens.emplace_back(matched_string);
