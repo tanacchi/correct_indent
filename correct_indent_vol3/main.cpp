@@ -73,10 +73,10 @@ int main(int argc, char** argv)
       std::smatch result{};
       if (std::regex_search(target, result, std::regex("\\W")))
       {
-        sub_tokens.emplace_back(result.prefix());
-        std::string matched_string{result.str()};
-        if (matched_string != " ")
-          sub_tokens.emplace_back(matched_string);
+        std::string prefix{result.prefix()};
+        if (!prefix.empty())
+          sub_tokens.emplace_back(prefix);
+        sub_tokens.emplace_back(result.str());
       }
       else
       {
