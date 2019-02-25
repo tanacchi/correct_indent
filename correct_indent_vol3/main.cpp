@@ -87,7 +87,5 @@ int main(int argc, char** argv)
     tokens.emplace_back(sub_tokens);
   }
 
-  parse_level_1(tokens);
-
   return 0;
 }
