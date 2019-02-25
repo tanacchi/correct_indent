@@ -25,6 +25,8 @@ struct Token
       LParen,   RParen,     // ( , )
       LBrace,   RBrace,     // { , }
       LBracket, RBracket,   // [ , ]
+      SingleQuote,          // '
+      DoubleQuote,          // "
       IfKeyword,            // if
       ElseKeyWord,          // else
       WhileKeyword,         // while
@@ -101,6 +103,16 @@ std::vector<Token> parse_level_1(std::vector<std::vector<std::string>> tokens)
       {
         std::cout << "<- Hash" << std::endl;
         token.attribute = Token::Attribute::Hash;
+      }
+      else if (str == "'")
+      {
+        std::cout << "<- SingleQuote" << std::endl;
+        token.attribute = Token::Attribute::SingleQuote;
+      }
+      else if (str == "\"")
+      {
+        std::cout << "<- DoubleQuote" << std::endl;
+        token.attribute = Token::Attribute::DoubleQuote;
       }
       else if (str.empty())
       {
