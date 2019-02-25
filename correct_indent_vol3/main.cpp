@@ -64,10 +64,10 @@ int main(int argc, char** argv)
     str = str.substr(str.find_first_not_of(" "), length);
   }
   
-  std::vector<std::vector<std::string>> tokens{};
+  std::vector<std::vector<std::string>> string_matrix{};
   for (auto& str : string_rows)
   {
-    std::vector<std::string> sub_tokens{};
+    std::vector<std::string> sub_string_matrix{};
     for (std::string target{str}; !target.empty();)
     {
       std::smatch result{};
@@ -75,16 +75,22 @@ int main(int argc, char** argv)
       {
         std::string prefix{result.prefix()};
         if (!prefix.empty())
-          sub_tokens.emplace_back(prefix);
-        sub_tokens.emplace_back(result.str());
+          sub_string_matrix.emplace_back(prefix);
+        sub_string_matrix.emplace_back(result.str());
       }
       else
       {
-        sub_tokens.emplace_back(target);
+        sub_string_matrix.emplace_back(target);
       }
       target = result.suffix();
     }
-    tokens.emplace_back(sub_tokens);
+    string_matrix.emplace_back(sub_string_matrix);
+  }
+
+  std::vector<Token> tokens = std::move(parse(string_matrix));
+  for (const auto& token : tokens)
+  {
+    std::cout << token.content << "\t\t<-[" << token.attribute->name << "]" << std::endl;
   }
 
   return 0;

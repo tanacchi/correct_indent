@@ -264,7 +264,7 @@ template <typename T>
 Token make_token(std::string content)
 {
   Token token;
-  token.attribute = std::make_unique<Attribute>();
+  token.attribute = std::make_unique<T>();
   token.content = content;
   return token;
 }
