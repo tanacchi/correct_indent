@@ -30,12 +30,13 @@ struct Token
       WhileKeyword,         // while
       ReturnKeyword,        // return
       TypeKeyword,          // int
-      Identify              // CharAlphabet(CharAlphabet|CharNumber)*
+      Identify,             // CharAlphabet(CharAlphabet|CharNumber)*
       Number,               // CharNumber(CharNumber)*
       CharAlphabet,         // [a-zA-Z_]
       CharNumber,           // [0-9]
       Space,                // ' '
       NewLine,              // '\n'
+      Hash,                 // #
       Unknown
     };
    Token(Attribute attribute = Attribute::Unknown, std::string string = {})
@@ -86,9 +87,30 @@ std::vector<Token> parse_level_1(std::vector<std::vector<std::string>> tokens)
         std::cout << "<- RBrace" << std::endl;
         token.attribute = Token::Attribute::RBrace;
       }
+      else if (str == " ")
+      {
+        std::cout << "<- Space" << std::endl;
+        token.attribute = Token::Attribute::Space;
+      }
+      else if (str == "\n")
+      {
+        std::cout << "<- NewLine" << std::endl;
+        token.attribute = Token::Attribute::NewLine;
+      }
+      else if (str == "#")
+      {
+        std::cout << "<- Hash" << std::endl;
+        token.attribute = Token::Attribute::Hash;
+      }
+      else if (str.empty())
+      {
+        std::cout << "<- Empty" << std::endl;
+        token.attribute = Token::Attribute::Unknown;
+      }
       else
       {
         std::cout << "<- Other" << std::endl;
+        token.attribute = Token::Attribute::Unknown;
       }
       token.content = str;
       result.emplace_back(token);
