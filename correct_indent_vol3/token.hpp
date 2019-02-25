@@ -16,24 +16,26 @@ struct Token
 {
     enum class Attribute
     {
-      TermOperator,
-      FactorOpearator,
-      CompareOperator,
-      Equal,
-      Comma,
-      SemiColon,
-      LParen,   RParen,
-      LBrace,   RBrace,
-      LBracket, RBracket,
-      IfKeyword,
-      ElseKeyWord,
-      WhileKeyword,
-      ReturnKeyword,
-      TypeKeyword,
-      Identify,
-      Number,
-      CharAlphabet,
-      CharNumber,
+      TermOperator,         // + | -
+      FactorOpearator,      // * | / | %
+      CompareOperator,      // == | != | > | >= | < | <= 
+      Equal,                // =
+      Comma,                // ,
+      SemiColon,            // ;
+      LParen,   RParen,     // ( , )
+      LBrace,   RBrace,     // { , }
+      LBracket, RBracket,   // [ , ]
+      IfKeyword,            // if
+      ElseKeyWord,          // else
+      WhileKeyword,         // while
+      ReturnKeyword,        // return
+      TypeKeyword,          // int
+      Identify              // CharAlphabet(CharAlphabet|CharNumber)*
+      Number,               // CharNumber(CharNumber)*
+      CharAlphabet,         // [a-zA-Z_]
+      CharNumber,           // [0-9]
+      Space,                // ' '
+      NewLine,              // '\n'
       Unknown
     };
    Token(Attribute attribute = Attribute::Unknown, std::string string = {})
