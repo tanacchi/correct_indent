@@ -96,6 +96,12 @@ struct Space : public Attribute {
   {}
 };
 
+struct NewLine : public Attribute {
+  NewLine(std::string name = "NewLine")
+    : Attribute(name)
+  {}
+};
+
 struct Symbol : public Attribute {
   Symbol(std::string name = "Symbol")
     : Attribute(name)
@@ -288,6 +294,14 @@ std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_mat
       else if (std::regex_match(str, std::regex("\\w+")))
       {
         result.emplace_back(make_token<Identifier>(str));
+      }
+      else if (std::regex_match(str, std::regex(" ")))
+      {
+        result.emplace_back(make_token<Space>(str));
+      }
+      else if (std::regex_match(str, std::regex("\n")))
+      {
+        result.emplace_back(make_token<NewLine>(str));
       }
       else
       {

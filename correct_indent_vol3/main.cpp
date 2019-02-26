@@ -54,8 +54,7 @@ int main(int argc, char** argv)
   std::vector<std::string> string_rows{};
   for (std::string row_buff{}; std::getline(ss, row_buff);)
   {
-    if (row_buff != " ")
-      string_rows.emplace_back(row_buff);
+    string_rows.emplace_back(row_buff + '\n');
   }
 
   for (auto& str : string_rows)
