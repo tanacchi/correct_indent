@@ -122,6 +122,16 @@ struct Comma : public Symbol {
     : Symbol(name)
   {}
 };
+struct SingleQuote : public Symbol {
+  SingleQuote(std::string name = "SingleQuote")
+    : Symbol(name)
+  {}
+};
+struct DoubleQuote : public Symbol {
+  DoubleQuote(std::string name = "DoubleQuote")
+    : Symbol(name)
+  {}
+};
 struct LParen : public Symbol {
   LParen(std::string name = "LParen")
     : Symbol(name)
@@ -133,7 +143,7 @@ struct RParen : public Symbol {
   {}
 };
 struct LBrace : public Symbol {
-  LBrace(std::string name = "LBrac")
+  LBrace(std::string name = "LBrace")
     : Symbol(name)
   {}
 };
@@ -302,6 +312,50 @@ std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_mat
       else if (std::regex_match(str, std::regex("\n")))
       {
         result.emplace_back(make_token<NewLine>(str));
+      }
+      else if (std::regex_match(str, std::regex("=")))
+      {
+        result.emplace_back(make_token<Assign>(str));
+      }
+      else if (std::regex_match(str, std::regex(";")))
+      {
+        result.emplace_back(make_token<Semicolon>(str));
+      }
+      else if (std::regex_match(str, std::regex(",")))
+      {
+        result.emplace_back(make_token<Comma>(str));
+      }
+      else if (std::regex_match(str, std::regex("'")))
+      {
+        result.emplace_back(make_token<SingleQuote>(str));
+      }
+      else if (std::regex_match(str, std::regex("\"")))
+      {
+        result.emplace_back(make_token<DoubleQuote>(str));
+      }
+      else if (std::regex_match(str, std::regex("\\(")))
+      {
+        result.emplace_back(make_token<LParen>(str));
+      }
+      else if (std::regex_match(str, std::regex("\\)")))
+      {
+        result.emplace_back(make_token<RParen>(str));
+      }
+      else if (std::regex_match(str, std::regex("\\{")))
+      {
+        result.emplace_back(make_token<LBrace>(str));
+      }
+      else if (std::regex_match(str, std::regex("\\}")))
+      {
+        result.emplace_back(make_token<RBrace>(str));
+      }
+      else if (std::regex_match(str, std::regex("\\[")))
+      {
+        result.emplace_back(make_token<LBracket>(str));
+      }
+      else if (std::regex_match(str, std::regex("\\]")))
+      {
+        result.emplace_back(make_token<RBracket>(str));
       }
       else
       {
