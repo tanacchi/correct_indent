@@ -13,6 +13,7 @@
 #include <regex>
 #include <memory>
 #include <cassert>
+#include <iterator>
 #include <type_traits>
 #include <functional>
 
@@ -120,8 +121,8 @@ struct Symbol : public Attribute {
     : Attribute(name)
   {}
 };
-struct Assign : public Symbol {
-  Assign(std::string name = "Assign")
+struct Equal : public Symbol {
+  Equal(std::string name = "Equal")
     : Symbol(name)
   {}
 };
@@ -189,6 +190,11 @@ struct Comment : public Symbol {
 struct Operator : public Symbol {
   Operator(std::string name = "Operator")
     : Symbol(name)
+  {}
+};
+struct AssignOperator : public Operator {
+  AssignOperator(std::string name = "AssignOperator")
+    : Operator(name)
   {}
 };
 struct RelationalOperator : public Operator {
@@ -313,7 +319,7 @@ std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_mat
     { "\\w+",     make_token<Identifier> },
     { " ",        make_token<Space> },
     { "\n",       make_token<NewLine> },
-    // { "=",        make_token<Assign> },
+    { "=",        make_token<Equal> },
     { ";",        make_token<Semicolon> },
     { ",",        make_token<Comma> },
     { "#",        make_token<Hash> },
@@ -376,8 +382,24 @@ std::vector<Token> parse_2(std::vector<Token>&& tokens)
     else if (itr->attribute->name == "Hash")
     {
       std::string content{"#" + (++itr)->content};
-      std::cout << content << "'\t\t<-{PreprocessorOperator}"<< std::endl;
+      std::cout << content << "\t\t<-{PreprocessorOperator}"<< std::endl;
       result.emplace_back(make_token<PreprocessorOperator>(content));
+    }
+    else if (itr->attribute->name == "Equal")
+    {
+      ++itr;
+      if (itr->attribute->name == "Space")
+      {
+        std::cout << "=" << "\t\t<-{AssignOperator}"<< std::endl;
+        result.emplace_back(make_token<AssignOperator>("="));
+        std::cout << " " << "\t\t<-{Space}"<< std::endl;
+        result.emplace_back(make_token<Space>(" "));
+      }
+      else if (itr->attribute->name == "Equal")
+      {
+        std::cout << "==" << "\t\t<-{RelationalOperator}"<< std::endl;
+        result.emplace_back(make_token<RelationalOperator>("=="));
+      }
     }
     else 
     {
