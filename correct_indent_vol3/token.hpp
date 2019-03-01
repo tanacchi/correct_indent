@@ -163,6 +163,11 @@ struct RBracket : public Symbol {
     : Symbol(name)
   {}
 };
+struct Hash: public Symbol {
+  Hash(std::string name = "Hash")
+    : Symbol(name)
+  {}
+};
 struct Comment : public Symbol {
   Comment(std::string name = "Comment")
     : Symbol(name)
@@ -299,6 +304,7 @@ std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_mat
     { "=",        make_token<Assign> },
     { ";",        make_token<Semicolon> },
     { ",",        make_token<Comma> },
+    { "#",        make_token<Hash> },
     { "'",        make_token<SingleQuote> },
     { "\"",       make_token<DoubleQuote> },
     { "\\(",      make_token<LParen> },
