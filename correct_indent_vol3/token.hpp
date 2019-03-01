@@ -313,7 +313,7 @@ std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_mat
     { "\\w+",     make_token<Identifier> },
     { " ",        make_token<Space> },
     { "\n",       make_token<NewLine> },
-    { "=",        make_token<Assign> },
+    // { "=",        make_token<Assign> },
     { ";",        make_token<Semicolon> },
     { ",",        make_token<Comma> },
     { "#",        make_token<Hash> },
