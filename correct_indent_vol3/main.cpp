@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -37,36 +38,31 @@ int main(int argc, char** argv)
   const std::string source_file_name{argv[1]};
   std::fstream source_file_stream(source_file_name, std::ios::in);
 
-  std::string input_string_raw{};
+  std::vector<std::string> source_strings{};
   for (std::string input_buff{}; std::getline(source_file_stream, input_buff);)
   {
-    input_string_raw += input_buff + '\n';
+    source_strings.emplace_back(input_buff);
   }
 
-  auto result1{remove_consecutive_chars(input_string_raw.begin(), 
-                                        input_string_raw.end(), 
-                                        ' ')};
-  auto result2{remove_consecutive_chars(input_string_raw.begin(), 
-                                        result1,
-                                        '\n')};
-
-  std::stringstream ss{input_string_raw.assign(input_string_raw.begin(), result2)};
-  std::vector<std::string> string_rows{};
-  for (std::string row_buff{}; std::getline(ss, row_buff);)
+  for (auto& s : source_strings)
   {
-    string_rows.emplace_back(row_buff + '\n');
-  }
+    // 行頭・行末の空白を除去
+    s = " " + s + " ";
+    s.erase(s.begin(),                           s.begin() + s.find_first_not_of(" "));
+    s.erase(s.begin() + s.find_last_not_of(" ") + 1, s.end());
 
-  for (auto& str : string_rows)
-  {
-    std::string::size_type length{str.find_last_not_of(" ") - str.find_first_not_of(" ") + 1};
-    str = str.substr(str.find_first_not_of(" "), length);
+    // 連続する空白を除去
+    auto no_consecutive_space_itr{remove_consecutive_chars(s.begin(), s.end(), ' ')};
+    s.erase(no_consecutive_space_itr, s.end());
+
+    s.erase(std::remove(s.begin(), s.end(), '\0'), s.end());
   }
-  
+  source_strings.erase(std::remove(source_strings.begin(), source_strings.end(), std::string{}), source_strings.end());
+
   std::vector<std::vector<std::string>> string_matrix{};
-  for (auto& str : string_rows)
+  for (const auto& str : source_strings)
   {
-    std::vector<std::string> sub_string_matrix{};
+    std::vector<std::string> token_strings{};
     for (std::string target{str}; !target.empty();)
     {
       std::smatch result{};
@@ -74,16 +70,16 @@ int main(int argc, char** argv)
       {
         std::string prefix{result.prefix()};
         if (!prefix.empty())
-          sub_string_matrix.emplace_back(prefix);
-        sub_string_matrix.emplace_back(result.str());
+          token_strings.emplace_back(prefix);
+        token_strings.emplace_back(result.str());
       }
       else
       {
-        sub_string_matrix.emplace_back(target);
+        token_strings.emplace_back(target);
       }
       target = result.suffix();
     }
-    string_matrix.emplace_back(sub_string_matrix);
+    string_matrix.emplace_back(token_strings);
   }
 
   std::vector<Token> tokens = std::move(parse(string_matrix));
