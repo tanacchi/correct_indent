@@ -336,4 +336,27 @@ std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_mat
   return result;
 }
 
+std::vector<Token> parse_2(std::vector<Token>&& tokens)
+{
+  std::vector<Token> result;
+  for (std::vector<Token>::const_iterator itr{tokens.begin()}, end{tokens.end()}; itr != end; ++itr)
+  {
+    if (itr->attribute->name == "DoubleQuote")
+    {
+      std::string content{"\""};
+      for (++itr; itr->attribute->name != "DoubleQuote"; ++itr)
+      {
+        content += itr->content;
+      }
+      std::cout << content << "\"\t\t<-{StringLiteral}"<< std::endl;
+      result.emplace_back(make_token<StringLiteral>(content+"\""));
+    }
+    else 
+    {
+      std::cout << itr->content << "\t\t<-{" << itr->attribute->name << "}"<< std::endl;
+    }
+  }
+  return result;
+}
+
 #endif  // INCLUDED_TOKEN_HPP

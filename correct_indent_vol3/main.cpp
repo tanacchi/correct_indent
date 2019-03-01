@@ -82,8 +82,8 @@ int main(int argc, char** argv)
     string_matrix.emplace_back(token_strings);
   }
 
-  std::vector<Token> tokens = std::move(parse(string_matrix));
-  for (const auto& token : tokens)
+  std::vector<Token> tokens1 = std::move(parse(string_matrix));
+  for (const auto& token : tokens1)
   {
     if (token.content == "\n")
     {
@@ -94,5 +94,6 @@ int main(int argc, char** argv)
     }
   }
 
+  std::vector<Token> tokens2{parse_2(std::move(tokens1))};
   return 0;
 }
