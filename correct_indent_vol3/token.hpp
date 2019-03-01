@@ -43,6 +43,18 @@ struct StatementKeyword : public Keyword {
     : Keyword(name)
   {}
 };
+struct PreprocessorOperator : public Keyword {
+  PreprocessorOperator(std::string name = "PreprocessorOperator")
+    : Keyword(name)
+  {}
+};
+
+
+struct PreprocessorArgument : public Attribute {
+  PreprocessorArgument(std::string name = "PreprocessorArgument")
+    : Attribute(name)
+  {}
+};
 
 struct Identifier : public Attribute {
   Identifier(std::string name = "Identifier")
@@ -360,6 +372,12 @@ std::vector<Token> parse_2(std::vector<Token>&& tokens)
       }
       std::cout << content << "'\t\t<-{CharLiteral}"<< std::endl;
       result.emplace_back(make_token<CharLiteral>(content+"'"));
+    }
+    else if (itr->attribute->name == "Hash")
+    {
+      std::string content{"#" + (++itr)->content};
+      std::cout << content << "'\t\t<-{PreprocessorOperator}"<< std::endl;
+      result.emplace_back(make_token<PreprocessorOperator>(content));
     }
     else 
     {
