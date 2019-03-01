@@ -351,6 +351,16 @@ std::vector<Token> parse_2(std::vector<Token>&& tokens)
       std::cout << content << "\"\t\t<-{StringLiteral}"<< std::endl;
       result.emplace_back(make_token<StringLiteral>(content+"\""));
     }
+    else if (itr->attribute->name == "SingleQuote")
+    {
+      std::string content{"'"};
+      for (++itr; itr->attribute->name != "SingleQuote"; ++itr)
+      {
+        content += itr->content;
+      }
+      std::cout << content << "'\t\t<-{CharLiteral}"<< std::endl;
+      result.emplace_back(make_token<CharLiteral>(content+"'"));
+    }
     else 
     {
       std::cout << itr->content << "\t\t<-{" << itr->attribute->name << "}"<< std::endl;
