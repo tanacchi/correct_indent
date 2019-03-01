@@ -89,7 +89,13 @@ int main(int argc, char** argv)
   std::vector<Token> tokens = std::move(parse(string_matrix));
   for (const auto& token : tokens)
   {
-    std::cout << token.content << "\t\t<-[" << token.attribute->name << "]" << std::endl;
+    if (token.content == "\n")
+    {
+      std::cout << "\\n" << "\t\t<-[" << token.attribute->name << "]" << std::endl;
+    }
+    else {
+      std::cout << token.content << "\t\t<-[" << token.attribute->name << "]" << std::endl;
+    }
   }
 
   return 0;

@@ -14,6 +14,7 @@
 #include <memory>
 #include <cassert>
 #include <type_traits>
+#include <functional>
 
 struct Attribute {
   Attribute(std::string name = "Attribute")
@@ -288,79 +289,42 @@ Token make_token(std::string content)
 
 std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_matrix)
 {
+  using regex_tokenizer_pair_t = std::pair<std::string, std::function<Token(std::string)>>;
+  static std::vector<regex_tokenizer_pair_t> regex_tokenier_pairs {{
+    { "if|for",   make_token<StatementKeyword> },
+    { "[0-9].*",  make_token<NumberLiteral> },
+    { "\\w+",     make_token<Identifier> },
+    { " ",        make_token<Space> },
+    { "\n",       make_token<NewLine> },
+    { "=",        make_token<Assign> },
+    { ";",        make_token<Semicolon> },
+    { ",",        make_token<Comma> },
+    { "'",        make_token<SingleQuote> },
+    { "\"",       make_token<DoubleQuote> },
+    { "\\(",      make_token<LParen> },
+    { "\\)",      make_token<RParen> },
+    { "\\{",      make_token<LBrace> },
+    { "\\}",      make_token<RBrace> },
+    { "\\[",      make_token<LBracket> },
+    { "\\]",      make_token<RBracket> },
+  }};
+
   std::vector<Token> result;
   for (auto row : string_matrix)
   {
     for (auto str : row)
     {
-      if (std::regex_match(str, std::regex("if|for")))
-      {
-        result.emplace_back(make_token<StatementKeyword>(str));
-      }
-      else if (std::regex_match(str, std::regex("[0-9].*")))
-      {
-        result.emplace_back(make_token<NumberLiteral>(str));
-      }
-      else if (std::regex_match(str, std::regex("\\w+")))
-      {
-        result.emplace_back(make_token<Identifier>(str));
-      }
-      else if (std::regex_match(str, std::regex(" ")))
-      {
-        result.emplace_back(make_token<Space>(str));
-      }
-      else if (std::regex_match(str, std::regex("\n")))
-      {
-        result.emplace_back(make_token<NewLine>(str));
-      }
-      else if (std::regex_match(str, std::regex("=")))
-      {
-        result.emplace_back(make_token<Assign>(str));
-      }
-      else if (std::regex_match(str, std::regex(";")))
-      {
-        result.emplace_back(make_token<Semicolon>(str));
-      }
-      else if (std::regex_match(str, std::regex(",")))
-      {
-        result.emplace_back(make_token<Comma>(str));
-      }
-      else if (std::regex_match(str, std::regex("'")))
-      {
-        result.emplace_back(make_token<SingleQuote>(str));
-      }
-      else if (std::regex_match(str, std::regex("\"")))
-      {
-        result.emplace_back(make_token<DoubleQuote>(str));
-      }
-      else if (std::regex_match(str, std::regex("\\(")))
-      {
-        result.emplace_back(make_token<LParen>(str));
-      }
-      else if (std::regex_match(str, std::regex("\\)")))
-      {
-        result.emplace_back(make_token<RParen>(str));
-      }
-      else if (std::regex_match(str, std::regex("\\{")))
-      {
-        result.emplace_back(make_token<LBrace>(str));
-      }
-      else if (std::regex_match(str, std::regex("\\}")))
-      {
-        result.emplace_back(make_token<RBrace>(str));
-      }
-      else if (std::regex_match(str, std::regex("\\[")))
-      {
-        result.emplace_back(make_token<LBracket>(str));
-      }
-      else if (std::regex_match(str, std::regex("\\]")))
-      {
-        result.emplace_back(make_token<RBracket>(str));
-      }
-      else
-      {
+      [&] { 
+        for (auto tokenizer : regex_tokenier_pairs) 
+        {
+          if (std::regex_match(str, std::regex(tokenizer.first)))
+          {
+            result.emplace_back(tokenizer.second(str));
+            return;
+          }
+        }
         result.emplace_back(make_token<Symbol>(str));
-      }
+      }();
     }
   }
   return result;
