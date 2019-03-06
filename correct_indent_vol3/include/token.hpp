@@ -16,6 +16,7 @@
 #include <iterator>
 #include <type_traits>
 #include <functional>
+#include <boost/any.hpp>
 
 struct Attribute {
   Attribute(std::string name = "Attribute")
