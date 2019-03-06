@@ -49,7 +49,16 @@ struct PreprocessorOperator : public Keyword {
     : Keyword(name)
   {}
 };
-
+struct IncludePreprocessorOperator : public PreprocessorOperator {
+  IncludePreprocessorOperator(std::string name = "IncludePreprocessorOperator")
+    : PreprocessorOperator(name)
+  {}
+};
+struct DefinePreprocessorOperator : public PreprocessorOperator {
+  DefinePreprocessorOperator(std::string name = "DefinePreprocessorOperator")
+    : PreprocessorOperator(name)
+  {}
+};
 
 struct PreprocessorArgument : public Attribute {
   PreprocessorArgument(std::string name = "PreprocessorArgument")
