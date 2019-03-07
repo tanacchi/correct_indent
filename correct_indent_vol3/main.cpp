@@ -13,7 +13,6 @@
 #include <fstream>
 #include <regex>
 
-#include "token.hpp"
 #include "token2.hpp"
 
 template<typename charT = char>
@@ -36,6 +35,7 @@ decltype(auto) remove_consecutive_chars(
 
 int main(int argc, char** argv)
 {
+  std::cout << sizeof(Attribute) << "\t" << sizeof(UnaryArithmeticOperator) << std::endl;
   const std::string source_file_name{argv[1]};
   std::fstream source_file_stream(source_file_name, std::ios::in);
 
@@ -83,18 +83,11 @@ int main(int argc, char** argv)
     string_matrix.emplace_back(token_strings);
   }
 
-  std::vector<Token> tokens1 = std::move(parse(string_matrix));
-  for (const auto& token : tokens1)
-  {
-    if (token.content == "\n")
-    {
-      std::cout << "\\n" << "\t\t<-[" << token.attribute->name << "]" << std::endl;
-    }
-    else {
-      std::cout << token.content << "\t\t<-[" << token.attribute->name << "]" << std::endl;
-    }
-  }
+  TokenArray tokens1 = parse(string_matrix);
+  // for (const auto& token : tokens1)
+  // {
+    // std::cout << token.content << "\t\t" << typeid(token.attribute).name() << std::endl;
+  // }
 
-  std::vector<Token> tokens2{parse_2(std::move(tokens1))};
   return 0;
 }

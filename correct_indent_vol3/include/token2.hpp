@@ -18,7 +18,12 @@
 #include <functional>
 #include <boost/any.hpp>
 
-struct Attribute {};
+struct Attribute {
+  Attribute()  noexcept = default;
+  Attribute(const Attribute&) noexcept = default;
+  Attribute& operator=(const Attribute&) noexcept = default;
+  ~Attribute() noexcept = default;
+};
 
 struct Keyword : public Attribute {};
 struct TypeKeyword : public Keyword {};
@@ -87,27 +92,60 @@ struct Token
 {
   using attribute_type = T;
 
-  Token(const Token& token) noexcept
-    : attribute{token.attribute},
+  Token(std::string content)
+    : attribute{},
       content{content}
   {
   }
-
-  const Token& operator=(const Token& rhs) noexcept
-  {
-    attribute = rhs.attribute;
-    content   = rhs.content;
-  }
-
-  ~Token() noexcept = default;
 
   T attribute;
   std::string content;
 };
 
+using TokenArray = std::vector<boost::any>;
+
 TokenArray parse(const std::vector<std::vector<std::string>>& string_matrix)
 {
+  // static const std::map<std::string, std::function<AnyToken(std::string)> > regex_token_table = {
+    // { "if|for",  [](std::string content){ return Token<StatementKeyword>(content); }},
+    // { "[0-9].*", [](std::string content){ return Token<NumberLiteral>(content); }},
+    // { "\\w+",    [](std::string content){ return Token<Identifier>(content); }},
+    // { " ",       [](std::string content){ return Token<Space>(content); }},
+    // { "\n",      [](std::string content){ return Token<NewLine>(content); }},
+    // { "=",       [](std::string content){ return Token<Equal>(content); }},
+    // { ";",       [](std::string content){ return Token<Semicolon>(content); }},
+    // { ",",       [](std::string content){ return Token<Comma>(content); }},
+    // { "#",       [](std::string content){ return Token<Hash>(content); }},
+    // { "'",       [](std::string content){ return Token<SingleQuote>(content); }},
+    // { "\"",      [](std::string content){ return Token<DoubleQuote>(content); }},
+    // { "\\(",     [](std::string content){ return Token<LParen>(content); }},
+    // { "\\)",     [](std::string content){ return Token<RParen>(content); }},
+    // { "\\{",     [](std::string content){ return Token<LBrace>(content); }},
+    // { "\\}",     [](std::string content){ return Token<RBrace>(content); }},
+    // { "\\[",     [](std::string content){ return Token<LBracket>(content); }},
+    // { "\\]",     [](std::string content){ return Token<RBracket>(content); }},
+  // };
+
   TokenArray result;
+
+  // for (auto row : string_matrix)
+  // {
+    // for (auto str : row)
+    // {
+      // [&] {
+        // for (auto itr{regex_token_table.begin()}, end{regex_token_table.end()}; itr != end; ++itr)
+        // {
+          // if (std::regex_match(str, std::regex(itr->first)))
+          // {
+            // result.emplace_back(std::move(itr->second(str)));
+            // return;
+          // }
+        // }
+        // result.emplace_back(std::move(Token<Symbol>(str)));
+      // }();
+    // }
+  // }
+
   return result;
 }
 
