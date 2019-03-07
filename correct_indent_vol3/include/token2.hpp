@@ -19,7 +19,7 @@
 #include <boost/any.hpp>
 
 struct Attribute {
-  Attribute()  noexcept = default;
+  Attribute() noexcept = default;
   Attribute(const Attribute&) noexcept = default;
   Attribute& operator=(const Attribute&) noexcept = default;
   ~Attribute() noexcept = default;
@@ -87,27 +87,44 @@ struct UnaryBitwiseOperator : public UnaryOperator, public BitwiseOperator {};
 struct BinaryBitwiseOperator : public BinaryOperator, public BitwiseOperator {};
 struct CompoundBitwiseOperator : public CompoundOperator, public BitwiseOperator {};
 
-template <typename T>
-struct Token
+struct TokenBase
 {
-  using attribute_type = T;
-
-  Token(std::string content)
-    : attribute{},
-      content{content}
+  TokenBase(const std::string& content)
+    : content{content}
   {
   }
 
-  T attribute;
   std::string content;
 };
 
-using TokenArray = std::vector<boost::any>;
+template <typename T>
+struct Token : public TokenBase
+{
+  using attribute = T;
+  
+  Token(const std::string& content)
+    : TokenBase(content)
+  {
+  }
+};
+
+struct AnyToken
+{
+  template <typename T>
+  AnyToken(T&& attribute, const std::string& content)
+  {
+    token_ptr.reset(new Token<T>(content));
+  }
+
+  std::unique_ptr<TokenBase> token_ptr;
+};
+
+using TokenArray = std::vector<AnyToken>;
 
 TokenArray parse(const std::vector<std::vector<std::string>>& string_matrix)
 {
-  // static const std::map<std::string, std::function<AnyToken(std::string)> > regex_token_table = {
-    // { "if|for",  [](std::string content){ return Token<StatementKeyword>(content); }},
+  // static const std::map<std::string, std::function<Token<Attribute>(std::string)> > regex_token_table = {
+    // { "if|for",  [](std::string content){ return make_token<StatementKeyword>(content); }},
     // { "[0-9].*", [](std::string content){ return Token<NumberLiteral>(content); }},
     // { "\\w+",    [](std::string content){ return Token<Identifier>(content); }},
     // { " ",       [](std::string content){ return Token<Space>(content); }},
@@ -127,22 +144,16 @@ TokenArray parse(const std::vector<std::vector<std::string>>& string_matrix)
   // };
 
   TokenArray result;
+  result.emplace_back(AnyToken{UnaryArithmeticOperator{}, "Hello"});
 
   // for (auto row : string_matrix)
   // {
     // for (auto str : row)
     // {
-      // [&] {
-        // for (auto itr{regex_token_table.begin()}, end{regex_token_table.end()}; itr != end; ++itr)
-        // {
-          // if (std::regex_match(str, std::regex(itr->first)))
-          // {
-            // result.emplace_back(std::move(itr->second(str)));
-            // return;
-          // }
-        // }
-        // result.emplace_back(std::move(Token<Symbol>(str)));
-      // }();
+      // if (std::regex_match(str, std::regex("if|for")))
+      // {
+        // result.emplace_back(StatementKeyword{}, str);
+      // }
     // }
   // }
 
