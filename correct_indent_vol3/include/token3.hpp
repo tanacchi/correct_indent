@@ -294,11 +294,14 @@ struct CompoundBitwiseOperator : public CompoundOperator, public BitwiseOperator
 
 struct TokenBase
 {
-  TokenBase(const std::string& content)
-    : content{content}
+  TokenBase(std::unique_ptr<Attribute>&& attribute_ptr,
+            const std::string& content)
+    : attribute_ptr{std::move(attribute_ptr)},
+      content{content}
   {
   }
 
+  std::unique_ptr<Attribute> attribute_ptr;
   std::string content;
 };
 
@@ -308,7 +311,7 @@ struct Token : public TokenBase
   using attribute = T;
   
   Token(const std::string& content)
-    : TokenBase(content)
+    : TokenBase(std::make_unique<T>(), content)
   {
   }
 };
@@ -326,7 +329,7 @@ struct AnyToken
 
 using TokenArray = std::vector<AnyToken>;
 
-TokenArray parse(const std::vector<std::vector<std::string>>& string_matrix)
+TokenArray parse1(const std::vector<std::vector<std::string>>& string_matrix)
 {
   TokenArray result;
 

@@ -13,7 +13,7 @@
 #include <fstream>
 #include <regex>
 
-#include "token.hpp"
+#include "token3.hpp"
 
 template<typename charT = char>
 decltype(auto) remove_consecutive_chars(
@@ -84,17 +84,17 @@ int main(int argc, char** argv)
     string_matrix.emplace_back(token_strings);
   }
 
-  TokenArray tokens1{parse(string_matrix)};
-  for (const auto& token : tokens1)
+  TokenArray tokens1{parse1(string_matrix)};
+  for (const auto& anytoken : tokens1)
   {
-    std::cout << token.content << "\t\t" << token.attribute->name << std::endl;
+    std::cout << anytoken.token_ptr->content << "\t\t<-{" << anytoken.token_ptr->attribute_ptr->name << "}"<< std::endl;
   }
 
-  TokenArray tokens2{parse2(std::move(tokens1))};
-  for (const auto& token : tokens2)
-  {
-    std::cout << token.content << "\t\t" << token.attribute->name << std::endl;
-  }
+  // TokenArray tokens2{parse2(std::move(tokens1))};
+  // for (const auto& token : tokens2)
+  // {
+    // std::cout << token.content << "\t\t" << token.attribute->name << std::endl;
+  // }
 
   // TokenArray tokens1 = parse(string_matrix);
   // for (const auto& any_token_ptr : tokens1)
