@@ -316,6 +316,14 @@ struct Token : public TokenBase
   }
 };
 
+// ハッシュコードからインスタンスを作る
+// テーブル的なものを作るしか無いみたい
+// template <typename T>
+// Token<T> duplicate(T attribute)
+// {
+  // return Token<T>{token.content};
+// }
+
 struct AnyToken
 {
   template <typename T>
@@ -412,6 +420,17 @@ TokenArray parse1(const std::vector<std::vector<std::string>>& string_matrix)
     }
   }
 
+  return result;
+}
+
+TokenArray parse2(TokenArray tokens)
+{
+  TokenArray result;
+  for (const auto& anytoken : tokens)
+  {
+    const auto& content{anytoken.token_ptr->content};
+    result.emplace_back(duplicate(*anytoken.token_ptr));
+  }
   return result;
 }
 
