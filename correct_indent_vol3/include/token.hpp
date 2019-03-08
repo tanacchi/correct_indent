@@ -395,6 +395,13 @@ std::vector<Token> parse2(std::vector<Token>&& tokens)
       std::string content{"#" + (++itr)->content};
       std::cout << content << "\t\t\t<-{PreprocessorOperator}"<< std::endl;
       result.emplace_back(make_token<PreprocessorOperator>(content));
+      for (++itr; itr->attribute->name != "NewLine"; ++itr)
+      {
+        if(itr->attribute->name == "Space")
+          result.emplace_back(make_token<Space>(itr->content));
+        else 
+          result.emplace_back(make_token<PreprocessorArgument>(itr->content));
+      }
     }
     else if (itr->attribute->name == "Equal")
     {
