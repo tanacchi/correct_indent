@@ -123,39 +123,86 @@ using TokenArray = std::vector<AnyToken>;
 
 TokenArray parse(const std::vector<std::vector<std::string>>& string_matrix)
 {
-  // static const std::map<std::string, std::function<Token<Attribute>(std::string)> > regex_token_table = {
-    // { "if|for",  [](std::string content){ return make_token<StatementKeyword>(content); }},
-    // { "[0-9].*", [](std::string content){ return Token<NumberLiteral>(content); }},
-    // { "\\w+",    [](std::string content){ return Token<Identifier>(content); }},
-    // { " ",       [](std::string content){ return Token<Space>(content); }},
-    // { "\n",      [](std::string content){ return Token<NewLine>(content); }},
-    // { "=",       [](std::string content){ return Token<Equal>(content); }},
-    // { ";",       [](std::string content){ return Token<Semicolon>(content); }},
-    // { ",",       [](std::string content){ return Token<Comma>(content); }},
-    // { "#",       [](std::string content){ return Token<Hash>(content); }},
-    // { "'",       [](std::string content){ return Token<SingleQuote>(content); }},
-    // { "\"",      [](std::string content){ return Token<DoubleQuote>(content); }},
-    // { "\\(",     [](std::string content){ return Token<LParen>(content); }},
-    // { "\\)",     [](std::string content){ return Token<RParen>(content); }},
-    // { "\\{",     [](std::string content){ return Token<LBrace>(content); }},
-    // { "\\}",     [](std::string content){ return Token<RBrace>(content); }},
-    // { "\\[",     [](std::string content){ return Token<LBracket>(content); }},
-    // { "\\]",     [](std::string content){ return Token<RBracket>(content); }},
-  // };
-
   TokenArray result;
-  result.emplace_back(AnyToken{UnaryArithmeticOperator{}, "Hello"});
 
-  // for (auto row : string_matrix)
-  // {
-    // for (auto str : row)
-    // {
-      // if (std::regex_match(str, std::regex("if|for")))
-      // {
-        // result.emplace_back(StatementKeyword{}, str);
-      // }
-    // }
-  // }
+  for (auto row : string_matrix)
+  {
+    for (auto str : row)
+    {
+      if (std::regex_match(str, std::regex("if|for")))
+      {
+        result.emplace_back(StatementKeyword{}, str);
+      }
+      else if (std::regex_match(str, std::regex("[0-9].*")))
+      {
+        result.emplace_back(AnyToken{NumberLiteral{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\w+")))
+      {
+        result.emplace_back(AnyToken{Identifier{}, str});
+      }
+      else if (std::regex_match(str, std::regex(" ")))
+      {
+        result.emplace_back(AnyToken{Space{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\n")))
+      {
+        result.emplace_back(AnyToken{NewLine{}, str});
+      }
+      else if (std::regex_match(str, std::regex("=")))
+      {
+        result.emplace_back(AnyToken{Equal{}, str});
+      }
+      else if (std::regex_match(str, std::regex(";")))
+      {
+        result.emplace_back(AnyToken{Semicolon{}, str});
+      }
+      else if (std::regex_match(str, std::regex(",")))
+      {
+        result.emplace_back(AnyToken{Comma{}, str});
+      }
+      else if (std::regex_match(str, std::regex("#")))
+      {
+        result.emplace_back(AnyToken{Hash{}, str});
+      }
+      else if (std::regex_match(str, std::regex("'")))
+      {
+        result.emplace_back(AnyToken{SingleQuote{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\"")))
+      {
+        result.emplace_back(AnyToken{DoubleQuote{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\(")))
+      {
+        result.emplace_back(AnyToken{LParen{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\)")))
+      {
+        result.emplace_back(AnyToken{RParen{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\{")))
+      {
+        result.emplace_back(AnyToken{LBrace{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\}")))
+      {
+        result.emplace_back(AnyToken{RBrace{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\[")))
+      {
+        result.emplace_back(AnyToken{LBracket{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\]")))
+      {
+        result.emplace_back(AnyToken{RBracket{}, str});
+      }
+      else
+      {
+        result.emplace_back(AnyToken{Symbol{}, str});
+      }
+    }
+  }
 
   return result;
 }

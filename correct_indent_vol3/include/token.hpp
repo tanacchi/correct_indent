@@ -319,6 +319,7 @@ Token make_token(std::string content)
   return token;
 }
 
+using TokenArray = std::vector<Token>;
 
 std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_matrix)
 {
@@ -364,7 +365,7 @@ std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_mat
   return result;
 }
 
-std::vector<Token> parse_2(std::vector<Token>&& tokens)
+std::vector<Token> parse2(std::vector<Token>&& tokens)
 {
   std::vector<Token> result;
   for (std::vector<Token>::const_iterator itr{tokens.begin()}, end{tokens.end()}; itr != end; ++itr)
@@ -376,7 +377,7 @@ std::vector<Token> parse_2(std::vector<Token>&& tokens)
       {
         content += itr->content;
       }
-      std::cout << content << "\"\t\t<-{StringLiteral}"<< std::endl;
+      std::cout << content << "\"\t\t\t<-{StringLiteral}"<< std::endl;
       result.emplace_back(make_token<StringLiteral>(content+"\""));
     }
     else if (itr->attribute->name == "SingleQuote")
@@ -386,13 +387,13 @@ std::vector<Token> parse_2(std::vector<Token>&& tokens)
       {
         content += itr->content;
       }
-      std::cout << content << "'\t\t<-{CharLiteral}"<< std::endl;
+      std::cout << content << "'\t\t\t<-{CharLiteral}"<< std::endl;
       result.emplace_back(make_token<CharLiteral>(content+"'"));
     }
     else if (itr->attribute->name == "Hash")
     {
       std::string content{"#" + (++itr)->content};
-      std::cout << content << "\t\t<-{PreprocessorOperator}"<< std::endl;
+      std::cout << content << "\t\t\t<-{PreprocessorOperator}"<< std::endl;
       result.emplace_back(make_token<PreprocessorOperator>(content));
     }
     else if (itr->attribute->name == "Equal")
@@ -400,20 +401,20 @@ std::vector<Token> parse_2(std::vector<Token>&& tokens)
       ++itr;
       if (itr->attribute->name == "Space")
       {
-        std::cout << "=" << "\t\t<-{AssignOperator}"<< std::endl;
+        std::cout << "=" << "\t\t\t<-{AssignOperator}"<< std::endl;
         result.emplace_back(make_token<AssignOperator>("="));
-        std::cout << " " << "\t\t<-{Space}"<< std::endl;
+        std::cout << " " << "\t\t\t<-{Space}"<< std::endl;
         result.emplace_back(make_token<Space>(" "));
       }
       else if (itr->attribute->name == "Equal")
       {
-        std::cout << "==" << "\t\t<-{RelationalOperator}"<< std::endl;
+        std::cout << "==" << "\t\t\t<-{RelationalOperator}"<< std::endl;
         result.emplace_back(make_token<RelationalOperator>("=="));
       }
     }
     else 
     {
-      std::cout << itr->content << "\t\t<-{" << itr->attribute->name << "}"<< std::endl;
+      std::cout << itr->content << "\t\t\t<-{" << itr->attribute->name << "}"<< std::endl;
     }
   }
   return result;
