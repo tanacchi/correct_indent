@@ -17,13 +17,22 @@
 #include <type_traits>
 #include <functional>
 #include <boost/any.hpp>
+#include <map>
+#include <functional>
 
 struct Attribute {
   Attribute(std::string name = "Attribute") noexcept
     : name{name}
   {
   }
-  Attribute(const Attribute&) noexcept = default;
+  Attribute(const Attribute& attribute) noexcept
+    : name{attribute.name}
+  {
+  }
+  Attribute(Attribute&& attribute) noexcept
+    : name{std::move(attribute.name)}
+  {
+  }
   Attribute& operator=(const Attribute&) noexcept = default;
   ~Attribute() noexcept = default;
 
@@ -314,26 +323,87 @@ struct Token : public TokenBase
     : TokenBase(std::make_unique<T>(), content)
   {
   }
-};
 
-// ハッシュコードからインスタンスを作る
-// テーブル的なものを作るしか無いみたい
-// template <typename T>
-// Token<T> duplicate(T attribute)
-// {
-  // return Token<T>{token.content};
-// }
+  Token(T&& attribute, const std::string& content)
+    : TokenBase(std::make_unique<T>(attribute), content)
+  {
+  }
+};
 
 struct AnyToken
 {
   template <typename T>
   AnyToken(T&& attribute, const std::string& content)
   {
-    token_ptr.reset(new Token<T>(content));
+    token_ptr.reset(new Token<T>(attribute.name, content));
   }
 
   std::unique_ptr<TokenBase> token_ptr;
 };
+
+// ハッシュコードからインスタンスを作る
+// テーブル的なものを作るしか無いみたい
+AnyToken duplicate(TokenBase& token)
+{
+  static const std::map<std::string, std::function<Attribute(void)>> name_token_table {{
+    {"Attribute",                   [](){ return Attribute(); }},
+    {"Keyword",                     [](){ return Keyword(); }  },
+    {"TypeKeyword",                 [](){ return TypeKeyword(); }  },
+    {"StatementKeyword",            [](){ return StatementKeyword(); }  },
+    {"PreprocessorOperator",        [](){ return PreprocessorOperator(); }  },
+    {"IncludePreprocessorOperator", [](){ return IncludePreprocessorOperator(); }  },
+    {"DefinePreprocessorOperator",  [](){ return DefinePreprocessorOperator(); }  },
+    {"PreprocessorArgument",        [](){ return PreprocessorArgument(); }  },
+    {"Identifier",                  [](){ return Identifier(); }  },
+    {"Literal",                     [](){ return Literal(); }  },
+    {"CharLiteral",                 [](){ return CharLiteral(); }  },
+    {"StringLiteral",               [](){ return StringLiteral(); }  },
+    {"NumberLiteral",               [](){ return NumberLiteral(); }  },
+    {"BinaryNumberLiteral",         [](){ return BinaryNumberLiteral(); }  },
+    {"OctalNumberLiteral",          [](){ return OctalNumberLiteral(); }  },
+    {"DecimalNumberLiteral",        [](){ return DecimalNumberLiteral(); }  },
+    {"HexadecimalNumberLiteral",    [](){ return HexadecimalNumberLiteral(); }  },
+    {"Space",                       [](){ return Space(); }  },
+    {"NewLine",                     [](){ return NewLine(); }  },
+    {"Symbol",                      [](){ return Symbol(); }  },
+    {"Equal",                       [](){ return Equal(); }  },
+    {"Semicolon",                   [](){ return Semicolon(); }  },
+    {"Comma",                       [](){ return Comma(); }  },
+    {"SingleQuote",                 [](){ return SingleQuote(); }  },
+    {"DoubleQuote",                 [](){ return DoubleQuote(); }  },
+    {"LParen",                      [](){ return LParen(); }  },
+    {"RParen",                      [](){ return RParen(); }  },
+    {"LBrace",                      [](){ return LBrace(); }  },
+    {"RBrace",                      [](){ return RBrace(); }  },
+    {"LBracket",                    [](){ return LBracket(); }  },
+    {"RBracket",                    [](){ return RBracket(); }  },
+    {"Hash",                        [](){ return Hash(); }  },
+    {"Comment"                  ,   [](){ return Comment(); }  },
+    {"Operator",                    [](){ return Operator(); }  },
+    {"AssignOperator",              [](){ return AssignOperator(); }  },
+    {"RelationalOperator",          [](){ return RelationalOperator(); }  },
+    {"SubscriptOperator",           [](){ return SubscriptOperator(); }  },
+    {"ArithmeticOperator",          [](){ return ArithmeticOperator(); }  },
+    {"LogicalOperator",             [](){ return LogicalOperator(); }  },
+    {"BitwiseOperator",             [](){ return BitwiseOperator(); }  },
+    {"UnaryOperator",               [](){ return UnaryOperator(); }  },
+    {"BinaryOperator",              [](){ return BinaryOperator(); }  },
+    {"CompoundOperator",            [](){ return CompoundOperator(); }  },
+    {"UnaryArithmeticOperator",     [](){ return UnaryArithmeticOperator(); }  },
+    {"BinaryArithmeticOperator",    [](){ return BinaryArithmeticOperator(); }  },
+    {"CompoundArithmeticOperator",  [](){ return CompoundArithmeticOperator(); }  },
+    {"UnaryLogicalOperator",        [](){ return UnaryLogicalOperator(); }  },
+    {"BinaryLogicalOperator",       [](){ return BinaryLogicalOperator(); }  },
+    {"UnaryBitwiseOperator",        [](){ return UnaryBitwiseOperator(); }  },
+    {"BinaryBitwiseOperator",       [](){ return BinaryBitwiseOperator(); }  },
+    {"CompoundBitwiseOperator",     [](){ return CompoundBitwiseOperator(); }  },
+  }};
+
+  auto found_attribute_generator{name_token_table.at(token.attribute_ptr->name)};
+  std::cout << "!!!" << found_attribute_generator().name << std::endl;
+  return AnyToken{found_attribute_generator(), token.content};
+}
+
 
 using TokenArray = std::vector<AnyToken>;
 
@@ -428,7 +498,6 @@ TokenArray parse2(TokenArray tokens)
   TokenArray result;
   for (const auto& anytoken : tokens)
   {
-    const auto& content{anytoken.token_ptr->content};
     result.emplace_back(duplicate(*anytoken.token_ptr));
   }
   return result;

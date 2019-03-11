@@ -90,11 +90,11 @@ int main(int argc, char** argv)
     std::cout << anytoken.token_ptr->content << "\t\t<-{" << anytoken.token_ptr->attribute_ptr->name << "}"<< std::endl;
   }
 
-  // TokenArray tokens2{parse2(std::move(tokens1))};
-  // for (const auto& token : tokens2)
-  // {
-    // std::cout << token.content << "\t\t" << token.attribute->name << std::endl;
-  // }
+  TokenArray tokens2{parse2(std::move(tokens1))};
+  for (const auto& anytoken : tokens2)
+  {
+    std::cout << anytoken.token_ptr->content << "\t\t<-[" << anytoken.token_ptr->attribute_ptr->name << "]" << std::endl;
+  }
 
   // TokenArray tokens1 = parse(string_matrix);
   // for (const auto& any_token_ptr : tokens1)
