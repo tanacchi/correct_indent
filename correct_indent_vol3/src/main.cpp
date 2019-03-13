@@ -85,22 +85,11 @@ int main(int argc, char** argv)
   }
 
   token::TokenArray tokens1{token::parse1(string_matrix)};
-  for (const auto& anytoken : tokens1)
-  {
-    std::cout << anytoken.token_ptr->content << "\t\t<-{" << anytoken.token_ptr->attribute_ptr->name << "}"<< std::endl;
-  }
-
   token::TokenArray tokens2{token::parse2(std::move(tokens1))};
   for (const auto& anytoken : tokens2)
   {
     std::cout << anytoken.token_ptr->content << "\t\t<-[" << anytoken.token_ptr->attribute_ptr->name << "]" << std::endl;
   }
-
-  // TokenArray tokens1 = parse(string_matrix);
-  // for (const auto& any_token_ptr : tokens1)
-  // {
-    // std::cout << any_token_ptr.token_ptr->content << std::endl;
-  // }
 
   return 0;
 }

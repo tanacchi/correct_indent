@@ -402,7 +402,6 @@ namespace token
     }};
 
     auto found_attribute_generator{name_token_table.at(token.attribute_ptr->name)};
-    std::cout << "!!!" << found_attribute_generator().name << std::endl;
     return AnyToken{found_attribute_generator(), token.content};
   }
 
