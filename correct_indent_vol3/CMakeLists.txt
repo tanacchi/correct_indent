@@ -20,7 +20,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
 set(OUTPUT_NAME "a.out")
 add_executable(${OUTPUT_NAME}
-  main.cpp
+  src/main.cpp
 )
 target_link_libraries(${OUTPUT_NAME}
   ${Boost_LIBRARIES}
