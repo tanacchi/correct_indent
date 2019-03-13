@@ -496,11 +496,18 @@ TokenArray parse1(const std::vector<std::vector<std::string>>& string_matrix)
 TokenArray parse2(TokenArray tokens)
 {
   TokenArray result;
-  for (auto itr{tokens.begin()}, end{tokens.end()}; itr != end; ++itr)
+
+  auto itr{tokens.begin()};
+
+  auto get_content  {[&](){ return itr->token_ptr->content; }};
+  auto get_attr_name{[&](){ return itr->token_ptr->attribute_ptr->name; }};
+
+  for (const auto& end{tokens.end()}; itr != end; ++itr)
   {
-    if (itr->token_ptr->attribute_ptr->name == "Hash")
+    if (get_attr_name() == "Hash")
     {
-      std::string kind{(++itr)->token_ptr->content};
+      ++itr;
+      std::string kind{get_content()};
       result.emplace_back(AnyToken{PreprocessorOperator{}, "#" + kind});
     }
     else
