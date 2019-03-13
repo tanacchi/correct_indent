@@ -17,17 +17,26 @@
 #include <type_traits>
 #include <functional>
 #include <boost/any.hpp>
+#include <map>
+#include <functional>
 
 struct Attribute {
-  Attribute(std::string name = "Attribute")
+  Attribute(std::string name = "Attribute") noexcept
     : name{name}
-  {}
-
-  Attribute(Attribute&& attribute)
+  {
+  }
+  Attribute(const Attribute& attribute) noexcept
     : name{attribute.name}
-  {}
+  {
+  }
+  Attribute(Attribute&& attribute) noexcept
+    : name{std::move(attribute.name)}
+  {
+  }
+  Attribute& operator=(const Attribute&) noexcept = default;
+  ~Attribute() noexcept = default;
 
-  const std::string name{};
+  std::string name{};
 };
 
 struct Keyword : public Attribute {
@@ -292,138 +301,259 @@ struct CompoundBitwiseOperator : public CompoundOperator, public BitwiseOperator
   {}
 };
 
-struct Token
+struct TokenBase
 {
-  Token()
-    : attribute{},
-      content{}
+  TokenBase(std::unique_ptr<Attribute>&& attribute_ptr,
+            const std::string& content)
+    : attribute_ptr{std::move(attribute_ptr)},
+      content{content}
   {
   }
 
-  Token(Token&& token)
-    : attribute{std::move(token.attribute)},
-      content{token.content}
-  {
-  }
-
-  std::unique_ptr<Attribute> attribute;
-  std::string                content;
+  std::unique_ptr<Attribute> attribute_ptr;
+  std::string content;
 };
 
 template <typename T>
-Token make_token(std::string content)
+struct Token : public TokenBase
 {
-  Token token;
-  token.attribute = std::make_unique<T>();
-  token.content = content;
-  return token;
-}
+  using attribute = T;
+  
+  Token(const std::string& content)
+    : TokenBase(std::make_unique<T>(), content)
+  {
+  }
 
-using TokenArray = std::vector<Token>;
+  Token(T&& attribute, const std::string& content)
+    : TokenBase(std::make_unique<T>(attribute), content)
+  {
+  }
+};
 
-std::vector<Token> parse(const std::vector<std::vector<std::string>>& string_matrix)
+struct AnyToken
 {
-  using regex_tokenizer_pair_t = std::pair<std::string, std::function<Token(std::string)>>;
-  static std::vector<regex_tokenizer_pair_t> regex_tokenier_pairs {{
-    { "if|for",   make_token<StatementKeyword> },
-    { "[0-9].*",  make_token<NumberLiteral> },
-    { "\\w+",     make_token<Identifier> },
-    { " ",        make_token<Space> },
-    { "\n",       make_token<NewLine> },
-    { "=",        make_token<Equal> },
-    { ";",        make_token<Semicolon> },
-    { ",",        make_token<Comma> },
-    { "#",        make_token<Hash> },
-    { "'",        make_token<SingleQuote> },
-    { "\"",       make_token<DoubleQuote> },
-    { "\\(",      make_token<LParen> },
-    { "\\)",      make_token<RParen> },
-    { "\\{",      make_token<LBrace> },
-    { "\\}",      make_token<RBrace> },
-    { "\\[",      make_token<LBracket> },
-    { "\\]",      make_token<RBracket> },
+  template <typename T>
+  AnyToken(T&& attribute, const std::string& content)
+  {
+    token_ptr.reset(new Token<T>(attribute.name, content));
+  }
+
+  std::unique_ptr<TokenBase> token_ptr;
+};
+
+// ハッシュコードからインスタンスを作る
+// テーブル的なものを作るしか無いみたい
+AnyToken duplicate(TokenBase& token)
+{
+  static const std::map<std::string, std::function<Attribute(void)>> name_token_table {{
+    {"Attribute",                   [](){ return Attribute(); }},
+    {"Keyword",                     [](){ return Keyword(); }  },
+    {"TypeKeyword",                 [](){ return TypeKeyword(); }  },
+    {"StatementKeyword",            [](){ return StatementKeyword(); }  },
+    {"PreprocessorOperator",        [](){ return PreprocessorOperator(); }  },
+    {"IncludePreprocessorOperator", [](){ return IncludePreprocessorOperator(); }  },
+    {"DefinePreprocessorOperator",  [](){ return DefinePreprocessorOperator(); }  },
+    {"PreprocessorArgument",        [](){ return PreprocessorArgument(); }  },
+    {"Identifier",                  [](){ return Identifier(); }  },
+    {"Literal",                     [](){ return Literal(); }  },
+    {"CharLiteral",                 [](){ return CharLiteral(); }  },
+    {"StringLiteral",               [](){ return StringLiteral(); }  },
+    {"NumberLiteral",               [](){ return NumberLiteral(); }  },
+    {"BinaryNumberLiteral",         [](){ return BinaryNumberLiteral(); }  },
+    {"OctalNumberLiteral",          [](){ return OctalNumberLiteral(); }  },
+    {"DecimalNumberLiteral",        [](){ return DecimalNumberLiteral(); }  },
+    {"HexadecimalNumberLiteral",    [](){ return HexadecimalNumberLiteral(); }  },
+    {"Space",                       [](){ return Space(); }  },
+    {"NewLine",                     [](){ return NewLine(); }  },
+    {"Symbol",                      [](){ return Symbol(); }  },
+    {"Equal",                       [](){ return Equal(); }  },
+    {"Semicolon",                   [](){ return Semicolon(); }  },
+    {"Comma",                       [](){ return Comma(); }  },
+    {"SingleQuote",                 [](){ return SingleQuote(); }  },
+    {"DoubleQuote",                 [](){ return DoubleQuote(); }  },
+    {"LParen",                      [](){ return LParen(); }  },
+    {"RParen",                      [](){ return RParen(); }  },
+    {"LBrace",                      [](){ return LBrace(); }  },
+    {"RBrace",                      [](){ return RBrace(); }  },
+    {"LBracket",                    [](){ return LBracket(); }  },
+    {"RBracket",                    [](){ return RBracket(); }  },
+    {"Hash",                        [](){ return Hash(); }  },
+    {"Comment"                  ,   [](){ return Comment(); }  },
+    {"Operator",                    [](){ return Operator(); }  },
+    {"AssignOperator",              [](){ return AssignOperator(); }  },
+    {"RelationalOperator",          [](){ return RelationalOperator(); }  },
+    {"SubscriptOperator",           [](){ return SubscriptOperator(); }  },
+    {"ArithmeticOperator",          [](){ return ArithmeticOperator(); }  },
+    {"LogicalOperator",             [](){ return LogicalOperator(); }  },
+    {"BitwiseOperator",             [](){ return BitwiseOperator(); }  },
+    {"UnaryOperator",               [](){ return UnaryOperator(); }  },
+    {"BinaryOperator",              [](){ return BinaryOperator(); }  },
+    {"CompoundOperator",            [](){ return CompoundOperator(); }  },
+    {"UnaryArithmeticOperator",     [](){ return UnaryArithmeticOperator(); }  },
+    {"BinaryArithmeticOperator",    [](){ return BinaryArithmeticOperator(); }  },
+    {"CompoundArithmeticOperator",  [](){ return CompoundArithmeticOperator(); }  },
+    {"UnaryLogicalOperator",        [](){ return UnaryLogicalOperator(); }  },
+    {"BinaryLogicalOperator",       [](){ return BinaryLogicalOperator(); }  },
+    {"UnaryBitwiseOperator",        [](){ return UnaryBitwiseOperator(); }  },
+    {"BinaryBitwiseOperator",       [](){ return BinaryBitwiseOperator(); }  },
+    {"CompoundBitwiseOperator",     [](){ return CompoundBitwiseOperator(); }  },
   }};
 
-  std::vector<Token> result;
+  auto found_attribute_generator{name_token_table.at(token.attribute_ptr->name)};
+  std::cout << "!!!" << found_attribute_generator().name << std::endl;
+  return AnyToken{found_attribute_generator(), token.content};
+}
+
+
+using TokenArray = std::vector<AnyToken>;
+
+TokenArray parse1(const std::vector<std::vector<std::string>>& string_matrix)
+{
+  TokenArray result;
+
   for (auto row : string_matrix)
   {
     for (auto str : row)
     {
-      [&] { 
-        for (auto tokenizer : regex_tokenier_pairs) 
-        {
-          if (std::regex_match(str, std::regex(tokenizer.first)))
-          {
-            result.emplace_back(tokenizer.second(str));
-            return;
-          }
-        }
-        result.emplace_back(make_token<Symbol>(str));
-      }();
+      if (std::regex_match(str, std::regex("if|for")))
+      {
+        result.emplace_back(StatementKeyword{}, str);
+      }
+      else if (std::regex_match(str, std::regex("[0-9].*")))
+      {
+        result.emplace_back(AnyToken{NumberLiteral{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\w+")))
+      {
+        result.emplace_back(AnyToken{Identifier{}, str});
+      }
+      else if (std::regex_match(str, std::regex(" ")))
+      {
+        result.emplace_back(AnyToken{Space{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\n")))
+      {
+        result.emplace_back(AnyToken{NewLine{}, str});
+      }
+      else if (std::regex_match(str, std::regex("=")))
+      {
+        result.emplace_back(AnyToken{Equal{}, str});
+      }
+      else if (std::regex_match(str, std::regex(";")))
+      {
+        result.emplace_back(AnyToken{Semicolon{}, str});
+      }
+      else if (std::regex_match(str, std::regex(",")))
+      {
+        result.emplace_back(AnyToken{Comma{}, str});
+      }
+      else if (std::regex_match(str, std::regex("#")))
+      {
+        result.emplace_back(AnyToken{Hash{}, str});
+      }
+      else if (std::regex_match(str, std::regex("'")))
+      {
+        result.emplace_back(AnyToken{SingleQuote{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\"")))
+      {
+        result.emplace_back(AnyToken{DoubleQuote{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\(")))
+      {
+        result.emplace_back(AnyToken{LParen{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\)")))
+      {
+        result.emplace_back(AnyToken{RParen{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\{")))
+      {
+        result.emplace_back(AnyToken{LBrace{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\}")))
+      {
+        result.emplace_back(AnyToken{RBrace{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\[")))
+      {
+        result.emplace_back(AnyToken{LBracket{}, str});
+      }
+      else if (std::regex_match(str, std::regex("\\]")))
+      {
+        result.emplace_back(AnyToken{RBracket{}, str});
+      }
+      else
+      {
+        result.emplace_back(AnyToken{Symbol{}, str});
+      }
     }
   }
+
   return result;
 }
 
-std::vector<Token> parse2(std::vector<Token>&& tokens)
+TokenArray parse2(TokenArray tokens)
 {
-  std::vector<Token> result;
-  for (std::vector<Token>::const_iterator itr{tokens.begin()}, end{tokens.end()}; itr != end; ++itr)
+  TokenArray result;
+
+  auto itr{tokens.begin()};
+
+  auto get_content  {[&](){ return itr->token_ptr->content; }};
+  auto get_attr_name{[&](){ return itr->token_ptr->attribute_ptr->name; }};
+
+  for (const auto& end{tokens.end()}; itr != end; ++itr)
   {
-    if (itr->attribute->name == "DoubleQuote")
-    {
-      std::string content{"\""};
-      for (++itr; itr->attribute->name != "DoubleQuote"; ++itr)
-      {
-        content += itr->content;
-      }
-      std::cout << content << "\"\t\t\t<-{StringLiteral}"<< std::endl;
-      result.emplace_back(make_token<StringLiteral>(content+"\""));
-    }
-    else if (itr->attribute->name == "SingleQuote")
-    {
-      std::string content{"'"};
-      for (++itr; itr->attribute->name != "SingleQuote"; ++itr)
-      {
-        content += itr->content;
-      }
-      std::cout << content << "'\t\t\t<-{CharLiteral}"<< std::endl;
-      result.emplace_back(make_token<CharLiteral>(content+"'"));
-    }
-    else if (itr->attribute->name == "Hash")
-    {
-      std::string content{"#" + (++itr)->content};
-      std::cout << content << "\t\t\t<-{PreprocessorOperator}"<< std::endl;
-      result.emplace_back(make_token<PreprocessorOperator>(content));
-      for (++itr; itr->attribute->name != "NewLine"; ++itr)
-      {
-        if(itr->attribute->name == "Space")
-          result.emplace_back(make_token<Space>(itr->content));
-        else 
-          result.emplace_back(make_token<PreprocessorArgument>(itr->content));
-      }
-    }
-    else if (itr->attribute->name == "Equal")
+    if (get_attr_name() == "Hash")
     {
       ++itr;
-      if (itr->attribute->name == "Space")
+      std::string kind{get_content()};
+      result.emplace_back(AnyToken{PreprocessorOperator{}, "#" + kind});
+      
+      for (++itr; get_attr_name() != "NewLine"; ++itr)
       {
-        std::cout << "=" << "\t\t\t<-{AssignOperator}"<< std::endl;
-        result.emplace_back(make_token<AssignOperator>("="));
-        std::cout << " " << "\t\t\t<-{Space}"<< std::endl;
-        result.emplace_back(make_token<Space>(" "));
-      }
-      else if (itr->attribute->name == "Equal")
-      {
-        std::cout << "==" << "\t\t\t<-{RelationalOperator}"<< std::endl;
-        result.emplace_back(make_token<RelationalOperator>("=="));
+        if (get_attr_name() == "Space")
+        {
+          result.emplace_back(AnyToken{Space{}, " "});
+        }
+        else 
+        {
+          result.emplace_back(PreprocessorArgument{}, get_content());
+        }
       }
     }
-    else 
+    else if (get_attr_name() == "SingleQuote")
     {
-      std::cout << itr->content << "\t\t\t<-{" << itr->attribute->name << "}"<< std::endl;
+      std::string content{get_content()};
+      for (++itr; get_attr_name() != "SingleQuote"; ++itr)
+      {
+        content += get_content();
+      }
+      result.emplace_back(CharLiteral{}, content + "'");
+    }
+    else if (get_attr_name() == "DoubleQuote")
+    {
+      std::string content{get_content()};
+      for (++itr; get_attr_name() != "DoubleQuote"; ++itr)
+      {
+        content += get_content();
+      }
+      result.emplace_back(StringLiteral{}, content + "\"");
+    }
+    else
+    {
+      result.emplace_back(duplicate(*itr->token_ptr));
     }
   }
+  auto newline_removed_itr
+    {std::remove_if(result.begin(), 
+                    result.end(), 
+                    [](const AnyToken& elem){ 
+                      return elem.token_ptr->attribute_ptr->name == "NewLine";
+                    }
+    )};
+  result.erase(newline_removed_itr, result.end());
+
   return result;
 }
 

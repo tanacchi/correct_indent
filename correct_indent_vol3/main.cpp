@@ -13,7 +13,7 @@
 #include <fstream>
 #include <regex>
 
-#include "token3.hpp"
+#include "token.hpp"
 
 template<typename charT = char>
 decltype(auto) remove_consecutive_chars(
