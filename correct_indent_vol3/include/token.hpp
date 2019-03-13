@@ -343,8 +343,18 @@ namespace token
     std::unique_ptr<TokenBase> token_ptr;
   };
 
-  // ハッシュコードからインスタンスを作る
-  // テーブル的なものを作るしか無いみたい
+  using TokenArray = std::vector<AnyToken>;
+
+  inline std::string get_content(const TokenArray::iterator& itr)
+  {
+    return itr->token_ptr->content;
+  }
+
+  inline std::string get_attr_name(const TokenArray::iterator& itr)
+  {
+    return itr->token_ptr->attribute_ptr->name;
+  }
+
   AnyToken duplicate(TokenBase& token)
   {
     static const std::map<std::string, std::function<Attribute(void)>> name_token_table {{
@@ -406,7 +416,6 @@ namespace token
   }
 
 
-  using TokenArray = std::vector<AnyToken>;
 
   TokenArray parse1(const std::vector<std::vector<std::string>>& string_matrix)
   {
@@ -500,44 +509,41 @@ namespace token
 
     auto itr{tokens.begin()};
 
-    auto get_content  {[&](){ return itr->token_ptr->content; }};
-    auto get_attr_name{[&](){ return itr->token_ptr->attribute_ptr->name; }};
-
-    for (const auto& end{tokens.end()}; itr != end; ++itr)
+    for (auto itr{tokens.begin()}, end{tokens.end()}; itr != end; ++itr)
     {
-      if (get_attr_name() == "Hash")
+      if (get_attr_name(itr) == "Hash")
       {
         ++itr;
-        std::string kind{get_content()};
+        std::string kind{get_content(itr)};
         result.emplace_back(AnyToken{PreprocessorOperator{}, "#" + kind});
 
-        for (++itr; get_attr_name() != "NewLine"; ++itr)
+        for (++itr; get_attr_name(itr) != "NewLine"; ++itr)
         {
-          if (get_attr_name() == "Space")
+          if (get_attr_name(itr) == "Space")
           {
             result.emplace_back(AnyToken{Space{}, " "});
           }
           else 
           {
-            result.emplace_back(PreprocessorArgument{}, get_content());
+            result.emplace_back(PreprocessorArgument{}, get_content(itr));
           }
         }
       }
-      else if (get_attr_name() == "SingleQuote")
+      else if (get_attr_name(itr) == "SingleQuote")
       {
-        std::string content{get_content()};
-        for (++itr; get_attr_name() != "SingleQuote"; ++itr)
+        std::string content{get_content(itr)};
+        for (++itr; get_attr_name(itr) != "SingleQuote"; ++itr)
         {
-          content += get_content();
+          content += get_content(itr);
         }
         result.emplace_back(CharLiteral{}, content + "'");
       }
-      else if (get_attr_name() == "DoubleQuote")
+      else if (get_attr_name(itr) == "DoubleQuote")
       {
-        std::string content{get_content()};
-        for (++itr; get_attr_name() != "DoubleQuote"; ++itr)
+        std::string content{get_content(itr)};
+        for (++itr; get_attr_name(itr) != "DoubleQuote"; ++itr)
         {
-          content += get_content();
+          content += get_content(itr);
         }
         result.emplace_back(StringLiteral{}, content + "\"");
       }
