@@ -545,6 +545,15 @@ TokenArray parse2(TokenArray tokens)
       result.emplace_back(duplicate(*itr->token_ptr));
     }
   }
+  auto newline_removed_itr
+    {std::remove_if(result.begin(), 
+                    result.end(), 
+                    [](const AnyToken& elem){ 
+                      return elem.token_ptr->attribute_ptr->name == "NewLine";
+                    }
+    )};
+  result.erase(newline_removed_itr, result.end());
+
   return result;
 }
 
