@@ -35,6 +35,7 @@ decltype(auto) remove_consecutive_chars(
 
 int main(int argc, char** argv)
 {
+  std::cout << sizeof(Attribute) << "\t" << sizeof(UnaryArithmeticOperator) << std::endl;
   const std::string source_file_name{argv[1]};
   std::fstream source_file_stream(source_file_name, std::ios::in);
 
@@ -79,20 +80,27 @@ int main(int argc, char** argv)
       }
       target = result.suffix();
     }
+    token_strings.emplace_back("\n");
     string_matrix.emplace_back(token_strings);
   }
 
-  std::vector<Token> tokens = std::move(parse(string_matrix));
-  for (const auto& token : tokens)
+  TokenArray tokens1{parse1(string_matrix)};
+  for (const auto& anytoken : tokens1)
   {
-    if (token.content == "\n")
-    {
-      std::cout << "\\n" << "\t\t<-[" << token.attribute->name << "]" << std::endl;
-    }
-    else {
-      std::cout << token.content << "\t\t<-[" << token.attribute->name << "]" << std::endl;
-    }
+    std::cout << anytoken.token_ptr->content << "\t\t<-{" << anytoken.token_ptr->attribute_ptr->name << "}"<< std::endl;
   }
+
+  TokenArray tokens2{parse2(std::move(tokens1))};
+  for (const auto& anytoken : tokens2)
+  {
+    std::cout << anytoken.token_ptr->content << "\t\t<-[" << anytoken.token_ptr->attribute_ptr->name << "]" << std::endl;
+  }
+
+  // TokenArray tokens1 = parse(string_matrix);
+  // for (const auto& any_token_ptr : tokens1)
+  // {
+    // std::cout << any_token_ptr.token_ptr->content << std::endl;
+  // }
 
   return 0;
 }
