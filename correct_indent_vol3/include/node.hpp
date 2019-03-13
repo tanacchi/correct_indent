@@ -4,15 +4,23 @@
 #include <vector>
 #include "token.hpp"
 
-struct Node
+namespace node
 {
-  enum class Attribute
+  struct Node
   {
-    Unknown
-  };
+    enum class Attribute
+    {
+      FunctionPrototype,
+      FunctionDefine,
+      FunctionCall,
+      VariableDeclaration,
+      VariableDefine,
+      Unknown
+    };
 
-  Attribute attribute;
-  token::TokenArray tokens;
-};
+    Attribute attribute;
+    token::TokenArray tokens;
+  };
+}
 
 #endif  // INCLUDED_NODE_HPP
