@@ -14,6 +14,7 @@
 #include <regex>
 
 #include "token.hpp"
+#include "node.hpp"
 
 template<typename charT = char>
 decltype(auto) remove_consecutive_chars(
