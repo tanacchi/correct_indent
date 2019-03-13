@@ -522,6 +522,24 @@ TokenArray parse2(TokenArray tokens)
         }
       }
     }
+    else if (get_attr_name() == "SingleQuote")
+    {
+      std::string content{get_content()};
+      for (++itr; get_attr_name() != "SingleQuote"; ++itr)
+      {
+        content += get_content();
+      }
+      result.emplace_back(CharLiteral{}, content + "'");
+    }
+    else if (get_attr_name() == "DoubleQuote")
+    {
+      std::string content{get_content()};
+      for (++itr; get_attr_name() != "DoubleQuote"; ++itr)
+      {
+        content += get_content();
+      }
+      result.emplace_back(StringLiteral{}, content + "\"");
+    }
     else
     {
       result.emplace_back(duplicate(*itr->token_ptr));
