@@ -509,6 +509,18 @@ TokenArray parse2(TokenArray tokens)
       ++itr;
       std::string kind{get_content()};
       result.emplace_back(AnyToken{PreprocessorOperator{}, "#" + kind});
+      
+      for (++itr; get_attr_name() != "NewLine"; ++itr)
+      {
+        if (get_attr_name() == "Space")
+        {
+          result.emplace_back(AnyToken{Space{}, " "});
+        }
+        else 
+        {
+          result.emplace_back(PreprocessorArgument{}, get_content());
+        }
+      }
     }
     else
     {
