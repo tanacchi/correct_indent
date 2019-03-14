@@ -6,8 +6,6 @@
 
 #include "token.hpp"
 
-#define ATTR_RED   "\x1b[31m"
-#define ATTR_RESET "\x1b[0m"
 
 namespace node
 {

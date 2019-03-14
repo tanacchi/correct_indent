@@ -14,6 +14,7 @@
 #include <regex>
 
 #include "token.hpp"
+#include "code_block.hpp"
 #include "node.hpp"
 
 template<typename charT = char>
@@ -91,7 +92,8 @@ int main(int argc, char** argv)
     std::cout << anytoken.token_ptr->content << "\t\t<-[" << anytoken.token_ptr->attribute_ptr->name << "]" << std::endl;
   }
 
-  node::node_test(std::move(tokens2));
+  // node::node_test(std::move(tokens2));
+  gen_code_blocks(std::move(tokens2));
 
   return 0;
 }
