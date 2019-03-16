@@ -17,10 +17,10 @@ struct CodeBlock
 
   CodeBlock(const token::TokenArray::iterator& tokens_begin, 
             const token::TokenArray::iterator& tokens_end,
-            std::size_t level, std::string kind_str)
+            std::size_t level)
     : begin{tokens_begin}, end{tokens_end},
       level{level},
-      kind{kind_str == "Paren" ? Kind::Paren : Kind::Brace}
+      kind{get_attr_name(begin) == "LParen" ? Kind::Paren : Kind::Brace}
   {
   }
 
@@ -91,6 +91,9 @@ void gen_code_blocks(token::TokenArray&& tokens)
         std::cout << ATTR_RED << get_content(it);
       }
       std::cout << ATTR_RESET << "level : " << current_level << std::endl;
+
+      CodeBlock block{begin_itr, end_itr, current_level};
+      std::cout << block << std::endl;
 
       tokens.erase(begin_itr, end_itr);
       
