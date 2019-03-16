@@ -69,7 +69,8 @@ void gen_code_blocks(token::TokenArray&& tokens)
       {
         std::cout << ATTR_RED << get_content(begin_itr);
       }
-      std::cout << get_content(itr) << ATTR_RESET << std::endl;
+      std::cout << get_content(itr) << ATTR_RESET  << " [level : " << CodeBlock::current_level << " ]" << std::endl;
+      --CodeBlock::current_level;
       tokens.erase(begin_itr, end_itr);
     }
     else 
