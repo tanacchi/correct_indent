@@ -93,7 +93,8 @@ int main(int argc, char** argv)
   }
 
   // node::node_test(std::move(tokens2));
-  gen_code_blocks(std::move(tokens2));
+  auto blocks = gen_code_blocks(std::move(tokens2));
+  std::cout << blocks.size() << std::endl;
 
   return 0;
 }

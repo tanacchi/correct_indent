@@ -15,27 +15,18 @@ struct CodeBlock
     Paren, Brace,
   };
 
-  CodeBlock(const token::TokenArray::iterator& tokens_begin, 
-            const token::TokenArray::iterator& tokens_end,
-            std::size_t level)
-    : begin{tokens_begin}, end{tokens_end},
+  CodeBlock(std::size_t start, std::size_t length, std::size_t level, std::string kind_str)
+    : start{start},
+      length{length},
       level{level},
-      kind{get_attr_name(begin) == "LParen" ? Kind::Paren : Kind::Brace}
+      kind{kind_str == "LParen" ? Kind::Paren : Kind::Brace}
   {
+    std::cout << "start : " << start << std::endl;
+    std::cout << "length: " << length << std::endl;
+    std::cout << "level : " << level << std::endl;
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const CodeBlock& code_block)
-  {
-    for (auto itr{code_block.begin}; itr != code_block.end; ++itr)
-    {
-      os << ATTR_RED << itr->token_ptr->content;
-    }
-    os << ATTR_RESET << " [ level : " << code_block.level << " ]"
-                     << " kind : " << (code_block.kind == CodeBlock::Kind::Paren ? "Paren" : "Brace") << std::endl;
-    return os;
-  }
-
-  token::TokenArray::iterator begin, end;
+  std::size_t start, length;
   std::size_t level;
   Kind        kind;
 };
@@ -71,7 +62,8 @@ CodeBlockArray gen_code_blocks(token::TokenArray&& tokens)
     {
       auto end_itr{std::next(itr)};
       auto begin_itr{get_begin_itr(itr)};
-      CodeBlock block{begin_itr, end_itr, current_level};
+      result.emplace_back(CodeBlock(std::distance(tokens.begin(), begin_itr), std::distance(begin_itr, end_itr),
+                                    current_level, get_attr_name(begin_itr)));
       tokens.erase(begin_itr, end_itr);
       itr = std::prev(begin_itr);
       --current_level;
