@@ -16,9 +16,11 @@ struct CodeBlock
 
   static std::size_t current_level;
 
-  CodeBlock(token::TokenArray&& tokens, Kind kind)
+  CodeBlock(const token::TokenArray::iterator& tokens_begin, 
+            const token::TokenArray::iterator& tokens_end,
+            Kind kind)
     : level{current_level},
-      tokens{std::move(tokens)},
+      tokens{std::make_move_iterator(tokens_begin), std::make_move_iterator(tokens_end)},
       kind{kind}
   {
   }
