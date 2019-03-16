@@ -11,7 +11,7 @@ struct CodeBlock
 {
   enum class Kind
   {
-    Paren, Brace, Blacket
+    Paren, Brace,
   };
 
   static std::size_t current_level;
@@ -32,12 +32,12 @@ std::size_t CodeBlock::current_level{0};
 
 inline bool is_begin_symbol(std::string attr_name)
 {
-  return attr_name == "LParen" || attr_name == "LBrace" || attr_name == "LBracket";
+  return attr_name == "LParen" || attr_name == "LBrace";
 }
 
 inline bool is_end_symbol(std::string attr_name)
 {
-  return attr_name == "RParen" || attr_name == "RBrace" || attr_name == "RBracket";
+  return attr_name == "RParen" || attr_name == "RBrace";
 }
 
 using CodeBlockArray = std::vector<CodeBlock>;
@@ -45,9 +45,7 @@ using CodeBlockArray = std::vector<CodeBlock>;
 token::TokenArray::iterator get_begin(const token::TokenArray::iterator& end)
 {
   std::string end_symbol{get_attr_name(end)};
-  std::string begin_symbol{end_symbol == "RParen" ? "LParen" :
-                           end_symbol == "RBrace" ? "LBrace" :
-                                                    "LBracket"};
+  std::string begin_symbol{end_symbol == "RParen" ? "LParen" : "LBrace"};
   auto itr{end};
   for (; get_attr_name(itr) != begin_symbol; --itr) ;
   return itr;
