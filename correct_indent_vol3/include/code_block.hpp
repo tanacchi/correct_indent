@@ -52,7 +52,7 @@ token::TokenArray::iterator get_begin_itr(const token::TokenArray::iterator& end
 
 using CodeBlockArray = std::vector<CodeBlock>;
 
-CodeBlockArray gen_code_blocks(token::TokenArray&& tokens)
+CodeBlockArray gen_code_blocks(token::TokenArray tokens)
 {
   CodeBlockArray result;
   std::size_t current_level{};

@@ -340,7 +340,7 @@ namespace token
         token_ptr.reset(new Token<T>(attribute.name, content));
       }
 
-    std::unique_ptr<TokenBase> token_ptr;
+    std::shared_ptr<TokenBase> token_ptr;
   };
 
   using TokenArray = std::vector<AnyToken>;
