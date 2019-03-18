@@ -1,11 +1,14 @@
 #ifndef INCLUDED_NODE_HPP
 #define INCLUDED_NODE_HPP
 
+#include <algorithm>
 #include <cassert>
 #include <vector>
+#include <deque>
+#include <utility>
 
 #include "token.hpp"
-
+#include "code_block.hpp"
 
 namespace node
 {
@@ -13,6 +16,8 @@ namespace node
   {
     enum class Attribute
     {
+      ParenBlock,
+      BraceBlock,
       FunctionPrototype,
       FunctionDefine,
       FunctionCall,
@@ -21,8 +26,23 @@ namespace node
       Unknown
     };
 
+    Node()
+      : attribute{Attribute::Unknown},
+        tokens{},
+        sub_ptr{}
+    {
+    }
+
+    Node(Attribute attribute, const token::TokenArray::iterator& begin, const token::TokenArray::iterator& end)
+      : attribute{attribute},
+        tokens{begin, end},
+        sub_ptr{}
+    {
+    }
+
     Attribute attribute;
     token::TokenArray tokens;
+    std::shared_ptr<Node> sub_ptr;
   };
 
   token::TokenArray::iterator get_paren_block_begin(token::TokenArray::iterator end_itr)
@@ -33,24 +53,18 @@ namespace node
     return itr;
   }
   
-  void node_test(token::TokenArray tokens)
+  void node_test(const token::TokenArray& tokens, const CodeBlockArray& blocks)
   {
-    for (auto itr{tokens.begin()}, end{tokens.end()}; itr != end; ++itr)
+    std::deque<token::AnyToken> deque;
+    for (auto block : blocks)
     {
-      if (get_attr_name(itr) == "RParen")
+      std::cout << block.start << " " << block.length << std::endl;
+      std::cout << ATTR_RED;
+      for (std::size_t i{}; i < block.length; ++i)
       {
-        auto paren_itr{get_paren_block_begin(itr)};
-        for (; paren_itr != itr; ++paren_itr)
-        {
-          std::cout << ATTR_RED << get_content(paren_itr);
-        }
-        std::cout << get_content(itr) << ATTR_RESET << std::endl;
-        continue;
+        std::cout << tokens[block.start + i].token_ptr->content;
       }
-      else
-      {
-        std::cout << get_content(itr) << std::endl;
-      }
+      std::cout << ATTR_RESET << std::endl;
     }
   }
 }
