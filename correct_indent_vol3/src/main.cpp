@@ -14,6 +14,8 @@
 #include <regex>
 
 #include "token.hpp"
+#include "code_block.hpp"
+#include "node.hpp"
 
 template<typename charT = char>
 decltype(auto) remove_consecutive_chars(
@@ -35,7 +37,6 @@ decltype(auto) remove_consecutive_chars(
 
 int main(int argc, char** argv)
 {
-  std::cout << sizeof(Attribute) << "\t" << sizeof(UnaryArithmeticOperator) << std::endl;
   const std::string source_file_name{argv[1]};
   std::fstream source_file_stream(source_file_name, std::ios::in);
 
@@ -84,23 +85,15 @@ int main(int argc, char** argv)
     string_matrix.emplace_back(token_strings);
   }
 
-  TokenArray tokens1{parse1(string_matrix)};
-  for (const auto& anytoken : tokens1)
-  {
-    std::cout << anytoken.token_ptr->content << "\t\t<-{" << anytoken.token_ptr->attribute_ptr->name << "}"<< std::endl;
-  }
-
-  TokenArray tokens2{parse2(std::move(tokens1))};
+  token::TokenArray tokens1{token::parse1(string_matrix)};
+  token::TokenArray tokens2{token::parse2(std::move(tokens1))};
   for (const auto& anytoken : tokens2)
   {
     std::cout << anytoken.token_ptr->content << "\t\t<-[" << anytoken.token_ptr->attribute_ptr->name << "]" << std::endl;
   }
 
-  // TokenArray tokens1 = parse(string_matrix);
-  // for (const auto& any_token_ptr : tokens1)
-  // {
-    // std::cout << any_token_ptr.token_ptr->content << std::endl;
-  // }
+  auto blocks = gen_code_blocks(tokens2);
+  node::node_test(tokens2, blocks);
 
   return 0;
 }
